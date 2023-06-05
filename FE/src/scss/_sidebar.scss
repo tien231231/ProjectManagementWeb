@@ -1,0 +1,76 @@
+/* css phần sidebar */
+.container_sidebar {
+  flex-shrink: 0;
+  height: calc(100% - $header-h);
+  position: relative;
+  width: 340px;
+  transition: all 0.3s linear;
+  z-index: 100;
+
+  .btn_sidebar {
+    position: absolute;
+    right: 8%;
+    display: flex;
+    align-items: center;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 24px;
+    width: 24px;
+    padding: 5px;
+    box-sizing: content-box;
+    cursor: pointer;
+    border-radius: 50%;
+    &:hover {
+      background-color: #ccc;
+    }
+    &.active {
+      right: -5%;
+      background-color: #ccc;
+      &:hover {
+        opacity: 0.6;
+      }
+    }
+  }
+  .sidebar__title {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #ffffff;
+    padding: 16px;
+  }
+  .sidebar__menu {
+    height: 100%;
+    overflow-y: auto;
+    max-height: calc(100vh - 60px);
+    &:where(.css-dev-only-do-not-override-htwhyh).ant-menu-inline
+      > .ant-menu-item,
+    :where(.css-dev-only-do-not-override-htwhyh).ant-menu-vertical
+      > .ant-menu-item,
+    :where(.css-dev-only-do-not-override-htwhyh).ant-menu-inline
+      > .ant-menu-submenu
+      > .ant-menu-submenu-title,
+    :where(.css-dev-only-do-not-override-htwhyh).ant-menu-vertical
+      > .ant-menu-submenu
+      > .ant-menu-submenu-title {
+      background-color: white;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      &:hover {
+        // background-color: rgba(0, 0, 0, 0.06);
+        background-color: $gray-color;
+      }
+    }
+    &::-webkit-scrollbar {
+      width: 4px;
+      background-color: #777;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #a48f8f;
+    }
+    &::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+      background-color: #decccc;
+    }
+  }
+}

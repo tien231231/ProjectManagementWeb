@@ -1,0 +1,97 @@
+@import "./variables";
+@mixin backgroundImg {
+  display: block;
+  height: auto;
+  width: 100%;
+  object-fit: cover;
+  opacity: 0.5;
+}
+
+@mixin formContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 500px;
+}
+@mixin size($width, $height: $width) {
+  width: $width;
+  height: $height;
+}
+@mixin minWidth($breakpoint) {
+  @media only screen and (min-width: $breakpoint) {
+    @content;
+  }
+}
+@mixin maxWidth($breakpoint) {
+  @media only screen and (max-width: $breakpoint) {
+    @content;
+  }
+}
+@mixin box-shadow($top, $left, $blur, $color, $inset: false) {
+  @if $inset {
+    box-shadow: inset $top $left $blur $color;
+  } @else {
+    box-shadow: $top $left $blur $color;
+  }
+}
+@mixin transform($property) {
+  -webkit-transform: $property;
+  -ms-transform: $property;
+  transform: $property;
+}
+@mixin border-radius($all: null, $tl: $all, $tr: $all, $btl: $all, $btr: $all) {
+  border-top-left-radius: $tl;
+  border-top-right-radius: $tr;
+  border-bottom-right-radius: $btr;
+  border-bottom-left-radius: $btl;
+}
+@mixin centerAbsolute($pos) {
+  position: absolute;
+  @if $pos == "both" {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  } @else if $pos == "left" {
+    left: 50%;
+    transform: translateX(-50%);
+  } @else if $pos == "top" {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+@mixin flex(
+  $direction: row,
+  $content: null,
+  $items: null,
+  $wrap: null,
+  $gap: null
+) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: $content;
+  align-items: $items;
+  flex-wrap: $wrap;
+  gap: $gap;
+}
+
+@mixin webkit-scrollbar($borderRadius: null, $width: null, $height: null) {
+  &::-webkit-scrollbar-track {
+    border-radius: $borderRadius;
+    background-color: $gray-color;
+  }
+
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $height;
+    background-color: $gray-color;
+    border-radius: $borderRadius;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: $borderRadius;
+    background-color: $darkgray-color;
+  }
+}

@@ -1,0 +1,48 @@
+/* css trang danh sách project */
+.project_page-header {
+  padding: 30px;
+  display: flex;
+  @include maxWidth($tablet-width) {
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 0;
+  }
+  .header_left {
+    flex-shrink: 0;
+  }
+  .header_right {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+
+    gap: 16px;
+    align-items: center;
+    @include maxWidth($tablet-width) {
+      justify-content: flex-start;
+    }
+  }
+}
+
+.project_page-table {
+  padding: 24px 30px;
+  overflow-x: auto;
+  @include maxWidth($mobile-width) {
+    padding: 10px;
+  }
+}
+.project_status {
+  .btn_status {
+    color: #000;
+    font-weight: 600;
+  }
+}
+.btn_status {
+  span {
+    font-size: 12px;
+  }
+}
+
+.project-name {
+  cursor: pointer;
+  color: #1677ff;
+}

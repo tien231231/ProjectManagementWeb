@@ -1,0 +1,6 @@
+.project-detail {
+  padding: 32px;
+  @include maxWidth($tablet-width) {
+    padding: 10px;
+  }
+}

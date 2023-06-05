@@ -1,0 +1,62 @@
+@import './mixin';
+
+.login, .forgot-password {
+    position: relative;
+
+    img {
+       @include backgroundImg
+    }
+
+    h3 {
+        text-align: center;
+    }
+
+    .form-container {
+        @include formContainer
+    }
+
+    .form-layout {
+        margin: auto;
+        padding: 0 4rem;
+        max-width: 100%;
+    
+        .ant-col.ant-form-item-label {
+            padding: 0 
+        }
+    
+        .ant-form-item-control-input {
+            text-align: center;
+    
+            button {
+                width: 100%;
+            }
+        }
+    }
+
+    .form-title {
+        margin: 2rem 4rem;
+    }
+
+    .ant-form-item:last-child {
+        button {
+            margin-top: 1rem;
+        }
+    }
+
+    .ant-typography {
+      
+        text-align: center;
+        
+    }
+
+   .login-divider {
+    width: 100%;
+    padding: 0 4rem;
+   }
+}
+
+
+
+
+
+
