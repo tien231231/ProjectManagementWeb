@@ -27,8 +27,9 @@ const Header = () => {
   const items = [
     {
       key: "1",
-      label: <Link to="/user/info">Thông tin tài khoản </Link>,
+      label: <Link to="/user/info">{user.userInfo.fullName} </Link>,
     },
+    
     {
       key: "4",
       danger: true,
@@ -48,7 +49,8 @@ const Header = () => {
             alt="mindx"
           />
         </Link>
-        <span>Mindx</span>
+        <span>ProjectManagement</span>
+        
       </div>
       <div className="header_auth">
         <div className="language_action">
@@ -80,6 +82,8 @@ const Header = () => {
           <BellOutlined />
         </span>
         <div className="header_auth-user">
+         
+          <div className="header__img">
           <Dropdown
             menu={{
               items,
@@ -87,12 +91,17 @@ const Header = () => {
           >
             <Link className="" to="/auth/info">
               <Space>
-                {user.userInfo.fullName}
-                <DownOutlined />
+              <img
+              srcSet={`${
+                user.userInfo.avatar ||
+                "https://st.quantrimang.com/photos/image/072015/22/avatar.jpg"
+              } 2x`}
+              alt=""
+            />
+                
               </Space>
             </Link>
           </Dropdown>
-          <div className="header__img">
             <img
               srcSet={`${
                 user.userInfo.avatar ||

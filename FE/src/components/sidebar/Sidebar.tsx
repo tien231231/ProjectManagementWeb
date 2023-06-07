@@ -109,7 +109,7 @@ const Sidebar = () => {
               t("contact"),
               "grp",
               null,
-              [getItem("Mindx", "14")],
+              [getItem("PM", "14")],
               "group"
             ),
           ]
