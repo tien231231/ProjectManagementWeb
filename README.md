@@ -6,8 +6,8 @@ Phạm vi sử dụng: trong 1 công ty công nghệ.
 Đối tượng sử dụng: các CBNV của công ty công nghệ đó.
 2. Yêu cầu chức năng
 2.1.	Sơ đồ luồng công việc
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/4ab365ae-f70d-4f71-80d4-101ecdfa673a)
 
- 
 2.2.	Vai trò của người dùng trong dự án
 Trong mỗi dự án, người dùng có 1 vai trò duy nhất.
 Có 4 vai trò trong 1 dự án:
@@ -17,7 +17,7 @@ Có 4 vai trò trong 1 dự án:
 -	Người giám sát dự án
 
 2.3.	Sơ đồ chuyển đổi trạng công việc
-
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7236caa4-8477-4b78-8571-9819853eb7b5)
   
 -	Open: Đang chờ được thực hiện
 -	In Progress: Đang thực hiện
@@ -27,7 +27,7 @@ Có 4 vai trò trong 1 dự án:
 -	Cancel: Hủy bỏ
 
 2.4.	Use cases
- 
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/8c012404-2446-4568-9dfd-e2c419ddfd2d)
 2.5.	Chi tiết
 2.5.1.	Đăng ký tài khoản
 -	Mô tả:
@@ -97,23 +97,20 @@ o	Mỗi comment bao gồm thông tin: nội dung, người tạo, ngày tạo.
 -	Yêu cầu bổ sung
 o	Các thành viên có thể thực hiện tag 1 hoặc nhiều thành viên khác vào một comment.
 
-3. Yêu cầu khác
--	Công nghệ (chọn 1 FE, 1 BE):
+3. Công nghệ sử dụng
+
+-	Công nghệ 
 o	FE:  
 	ReactJS
-	Vue
-	Angular
 o	BE: 
 	NodeJS + ExpressJS + MongoDB
-	PHP + MySQL
-	C# + SQL Server
-	Python + (PostgreSQL | MongoDB)
+
 -	Công cụ:
-o	Text editor, IDE: VS Code, Visual Studio, PHP Storm, …
+o	Text editor, IDE: VS Code, …
 o	UI/UX Design: Figma, …
-o	Source Control: GIT + (Github | Gitlab)
+o	Source Control: GIT + (Github)
 o	Mail: mailtrap.io
--	Không giới hạn công nghệ làm cho các tính năng riêng.
+
 
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/44ba6c86-c6ac-48df-9b21-4946ccbdb6d3)
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/c8705462-a119-48de-a108-882414dc3bd7)
