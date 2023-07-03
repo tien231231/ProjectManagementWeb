@@ -1,5 +1,8 @@
 
-QUẢN LÝ CÔNG VIỆC DỰ ÁN
+
+===================================QUẢN LÝ CÔNG VIỆC DỰ ÁN============================================
+
+
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/92dbf40a-be2f-4c38-aecd-526059b7c707)
 1. Mô tả
 Ứng dụng web quản lý công việc dự án được tạo ra nhằm giúp cho đội dự án phần mềm có thể dễ dàng và thuận tiên trong việc quản lý, phân công công việc và giao tiếp giữa các thành viên trong đội dự án.
@@ -100,7 +103,8 @@ o	Các thành viên có thể thực hiện tag 1 hoặc nhiều thành viên kh
 
 3. Công nghệ sử dụng
 
--	Công nghệ 
+-	Công nghệ
+
 o	FE:  
 	ReactJS
 o	BE: 
