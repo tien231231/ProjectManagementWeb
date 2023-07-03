@@ -4,11 +4,11 @@ import { useAppSelector } from "../../redux/hook";
 import { RootState } from "../../redux/store";
 import imageApi from "../../services/api/imageApi";
 import taskApi from "../../services/api/taskApi";
+import { changeMsgLanguage } from "../../utils/changeMsgLanguage";
 import { Editor } from "@tinymce/tinymce-react";
 import { Button } from "antd";
 import { NoticeType } from "antd/es/message/interface";
-import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Editor as TinyMCEEditor } from "tinymce";
 import { v4 as uuid } from "uuid";
@@ -51,7 +51,11 @@ const TaskInfo = ({ taskCurrent, showMessage }: ITaskComments) => {
       taskApi
         .addComment(taskCurrent._id, content)
         .then((res: any) => {
-          showMessage("success", res.message, 2);
+          showMessage(
+            "success",
+            changeMsgLanguage(res?.message, "Bình luận thành công"),
+            2
+          );
           setCountReloadComments((prev) => prev + 1);
           commentListRef?.current?.scrollIntoView({
             behavior: "smooth",
@@ -62,7 +66,14 @@ const TaskInfo = ({ taskCurrent, showMessage }: ITaskComments) => {
           }
         })
         .catch((err: any) => {
-          showMessage("error", err.response.data?.message, 2);
+          showMessage(
+            "error",
+            changeMsgLanguage(
+              err.response?.data?.message,
+              "Bình luận thất bại"
+            ),
+            2
+          );
         });
     }
   };
@@ -150,11 +161,12 @@ const TaskInfo = ({ taskCurrent, showMessage }: ITaskComments) => {
 
               <div className="btn_action">
                 <Button
+                  disabled={content ? false : true}
                   type="primary"
                   style={{ width: "90%", height: "50px" }}
                   onClick={handleSendComment}
                 >
-                  Send
+                  {t("base:send")}
                 </Button>
               </div>
             </div>

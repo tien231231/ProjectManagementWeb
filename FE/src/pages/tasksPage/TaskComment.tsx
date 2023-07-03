@@ -3,6 +3,7 @@ import { useAppSelector } from "../../redux/hook";
 import { RootState } from "../../redux/store";
 import imageApi from "../../services/api/imageApi";
 import taskApi from "../../services/api/taskApi";
+import { changeMsgLanguage } from "../../utils/changeMsgLanguage";
 import { Editor } from "@tinymce/tinymce-react";
 import { Modal, Popconfirm } from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -46,32 +47,39 @@ const TaskComment = ({
     taskApi
       .deleteComment(taskCurrentId, id)
       .then((res: any) => {
-        showMessage("success", res.message, 2);
+        showMessage(
+          "success",
+          changeMsgLanguage(res?.message, "Xóa thành công"),
+          2
+        );
         setCountReloadComments((prev) => prev + 1);
       })
       .catch((err: any) => {
-        showMessage("error", err.response.data?.message, 2);
+        showMessage(
+          "error",
+          changeMsgLanguage(err.response?.data?.message, "Xóa thất bại"),
+          2
+        );
       });
   };
   //hàm sửa
 
-  const handleEdit = () => {
-    console.log(contentRef.current);
-    // if (content && comment) {
-    //   showMessage("loading", `${t("content:loading")}...`);
-    //   taskApi
-    //     .addComment(comment._id, content)
-    //     .then((res: any) => {
-    //       showMessage("success", res.message, 2);
-    //       setCountReloadComments((prev) => prev + 1);
-    //       if (tinyRef.current) {
-    //         tinyRef.current.setContent("");
-    //       }
-    //     })
-    //     .catch((err: any) => {
-    //       showMessage("error", err.response.data?.message, 2);
-    //     });
-    // }
+  const handleEdit = (id: string) => {
+    if (contentRef.current) {
+      showMessage("loading", `${t("content:loading")}...`);
+      taskApi
+        .editComment(taskCurrentId, id, contentRef.current)
+        .then((res: any) => {
+          showMessage("success", t("base:success"), 2);
+          setCountReloadComments((prev) => prev + 1);
+          if (tinyRef.current) {
+            tinyRef.current.setContent("");
+          }
+        })
+        .catch((err: any) => {
+          showMessage("error", t("base:error"), 2);
+        });
+    }
   };
 
   function handleEditorChange(content: any, editor: any) {
@@ -108,7 +116,7 @@ const TaskComment = ({
               title={t("base:edit")}
               style={{ height: "500px" }}
               open={open}
-              onOk={handleEdit}
+              onOk={() => handleEdit(comment?._id)}
               onCancel={handleCancel}
               okText={t("base:ok")}
               cancelText={t("base:cancel")}
@@ -117,8 +125,9 @@ const TaskComment = ({
                 <Editor
                   onInit={(evt, editor) => {
                     tinyRef.current = editor;
+                    contentRef.current = comment?.content;
                   }}
-                  initialValue={comment.content}
+                  initialValue={comment?.content}
                   apiKey={process.env.REACT_APP_TINYMCE_KEY}
                   init={{
                     height: "100%",

@@ -1,6 +1,11 @@
 import axiosClient from "../axiosClient";
 
 const taskApi = {
+  // get all task của user
+  getTasks() {
+    const url = `/task/all`;
+    return axiosClient.get(url);
+  },
   addTask(task: any) {
     const url = `/task/new`;
     return axiosClient.post(url, task);
@@ -17,8 +22,14 @@ const taskApi = {
     const url = `/task/update/${taskId}`;
     return axiosClient.post(url, task);
   },
+  // trong 1 project củ thể
   getAllTask(stageId: string, params?: any) {
     const url = `/stage/tasks/${stageId}`;
+    return axiosClient.get(url, { params });
+  },
+  //tất cả task mà user tạo và thực hiện
+  getTasksByUser(params?: any) {
+    const url = `/task/related`;
     return axiosClient.get(url, { params });
   },
   // phần comment
@@ -35,6 +46,12 @@ const taskApi = {
   deleteComment(taskId: string, commentId: string) {
     const url = `/task/${taskId}/deletecomment/${commentId}`;
     return axiosClient.delete(url);
+  },
+  editComment(taskId: string, commentId: string, comment: string) {
+    const url = `/task/${taskId}/updatecomment/${commentId}`;
+    return axiosClient.put(url, {
+      content: comment,
+    });
   },
   // phần lịch sử hoạt động của task
   getActivities(taskId: string) {

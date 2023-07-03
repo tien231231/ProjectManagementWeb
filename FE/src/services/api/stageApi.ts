@@ -1,4 +1,4 @@
-import axiosClient from "../axiosClient";
+import axiosClient from '../axiosClient';
 
 interface IStageAdd {
   projectId?: string;
@@ -12,6 +12,10 @@ interface IStageEdit extends IStageAdd {
 
 const stageApi = {
   //lấy theo pagination(page)
+  getStage(stageId: string) {
+    const url = `/stage/details/${stageId}`;
+    return axiosClient.get(url);
+  },
   getStagesPagination(projectId: string, params: any) {
     const url = `/project/stages/${projectId}`;
     return axiosClient.get(url, {

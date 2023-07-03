@@ -1,6 +1,7 @@
 {
   "name": "Name",
-  "startDate": "Start date",
+  "startDate": "Date time",
+  "startingDate": "Start Date",
   "endDateExpected": "End Date Expected",
   "endDateActual": "Actual end date",
   "action": "Action",
@@ -15,6 +16,10 @@
   "desDeleteComment": "Are you sure to delete this comment?",
   "titleDeleteStage": "Delete the stages",
   "desDeleteStage": "Are you sure to delete this stages?",
+  "titleDeleteProject": "Delete the project",
+  "desDeleteProject": "Are you sure to delete this project?",
+  "dashboardProjectsListTitle": "Your Projects",
+  "dashbaordTasksListTitle": "Your Tasks",
   "profileUser": {
     "avatar": "Avatar",
     "choose photo": "Choose photo",
@@ -42,11 +47,15 @@
   },
   "form": {
     "comments": "Comments",
+    "comment": "Comment",
     "create task": "Create task",
+    "create project": "Create New Project",
     "edit task": "Edit task",
+    "edit project": "Edit Project Info",
     "information": "Information",
     "title": "Title",
     "job code": "Job code",
+    "project code": "Project Code",
     "status": "Status",
     "type": "Type",
     "priority": "Priority",
@@ -67,10 +76,43 @@
     "assignment": "Assignment",
     "issue": "Issue",
     "cancel": "Cancel",
-    "done": "Done"
+    "done": "Done",
+    "members": "Members",
+    "project name": "Project Name",
+    "all": "All",
+    "asc": "Asc",
+    "desc": "Desc",
+    "endDate": "End Date Expected"
   },
   "task": {
+    "jobCode": "Auto generated",
     "includes": "No task found",
-    "activity": "Activities"
+    "activity": "Activities",
+    "task": "task",
+    "update": "update",
+    "comment": "comment",
+    "complete": "complete",
+    "create": "create",
+    "cancel": "cancel",
+    "type": "Type",
+    "task name": "Task Name",
+    "export": "Export tasks",
+    "import": "Import tasks"
+  },
+  "member": {
+    "add member": "Add Members",
+    "member name": "Member name",
+    "role": "Role",
+    "join date": "Join date",
+    "manager": "Manager",
+    "leader": "Leader",
+    "supervisor": "Supervisor",
+    "member": "Member",
+    "delete popup title": "Delete Member",
+    "deltete popup desc": "Are you sure to delete this member?"
+  },
+  "message": {
+    "requiredUsername": "Please input your project name!",
+    "requiredDes": "Please describe your project!"
   }
 }

@@ -1,0 +1,91 @@
+.dashboard {
+  width: 100%;
+  padding: 0 30px;
+  .ant-table-sticky-scroll {
+    display: none;
+  }
+
+  .btn_status {
+    padding: 0;
+  }
+
+  @media only screen and (min-width: 1200px) {
+    .horizontal_divider {
+      display: none;
+    }
+  }
+
+  .projects_list {
+    .projects_list_header {
+      margin-top: 16px;
+      padding: 16px 0;
+      @include flex(row, null, center, null, 16px);
+      .ant-typography {
+        margin: 0;
+      }
+    }
+    .projects_list_item {
+      .project_name_column {
+        @include flex(row, space-between, center, null, 8px);
+        a {
+          font-weight: 600;
+        }
+      }
+
+      .project_name_action {
+        @include flex(row, null, null, null, 8px);
+      }
+    }
+    .tasks_table,
+    .projects_table {
+      width: auto;
+    }
+  }
+
+  .tasks_list {
+    .tasks_list_header {
+      margin-top: 16px;
+      padding: 16px 0;
+      .ant-typography {
+        margin: 0;
+      }
+    }
+    .tasks_container {
+      .task_priority {
+        @include flex(row, null, center, null, 8px);
+      }
+
+      .ant-typography {
+        margin: 0;
+      }
+      .task_name {
+        cursor: pointer;
+        color: #1677ff;
+      }
+      .table_header_container {
+        @include flex(row, space-between, center);
+        .icon_container {
+          @include flex(row, center, center);
+          cursor: pointer;
+          height: 24px;
+          width: 24px;
+        }
+      }
+      .table_header_filter {
+        @include flex(column);
+      }
+    }
+  }
+}
+
+.table_filter_dropdown {
+  @include flex(column);
+  padding: 8px 4px;
+  .ant-checkbox-wrapper {
+    margin-inline-start: 8px;
+  }
+}
+
+.dropdown_button {
+  @include flex(row, null, null, null, 8px);
+}

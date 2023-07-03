@@ -32,11 +32,11 @@ const TinyMce = ({ setContentMce, description, defaultValue }: Props) => {
           width: "100%",
           menubar: false,
           statusbar: false,
-          plugins: ["image"],
+          plugins: ["image", "charmap", "preview", "emoticons"],
           toolbar: `
-                        undo redo | formatselect | bold italic |  image | backcolor | \
-                    alignleft aligncenter alignright alignjustify | \
-                    bullist numlist outdent indent | removeformat 
+                   undo redo | formatselect  preview bold italic   image  backcolor  
+                    alignleft aligncenter alignright alignjustify  
+                    bullist numlist outdent indent | removeformat charmap emoticons 
                         `,
           file_picker_types: "file image media",
           image_class_list: [{ title: "Responsive", value: "img-tiny" }],

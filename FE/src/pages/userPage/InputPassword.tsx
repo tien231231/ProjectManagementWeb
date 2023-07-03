@@ -17,6 +17,7 @@ export const InputPasswordTextArea = ({
   setFieldUserEdit,
 }: IPropTextArea) => {
   const { t } = useTranslation(["content", "base"]);
+
   return (
     <TextArea
       value={fieldUserEdit.data}
@@ -29,6 +30,7 @@ export const InputPasswordTextArea = ({
       }
       onChange={(e) => {
         const value = e.target.value;
+
         if (
           !value.startsWith(" ") &&
           !value.endsWith("  ") &&
@@ -55,7 +57,23 @@ const InputPassword = ({ currentPassword, setCurrentPassword }: IProp) => {
 
   return (
     <>
+      {/* vì trình duyệt tự động đièn email và password. nên nếu chọn bất kí một cái tài khoản thì email sẽ chọn đến ô input của sidebar. nên bây giờ tạm fix là tạo một input fake để cho trình duyệt điền vào */}
+      <Input
+        autoComplete="new-password"
+        style={{
+          display: "flex",
+          position: "absolute",
+          width: 0,
+          height: 0,
+          padding: 0,
+          opacity: 0,
+        }}
+        // disabled
+      />
+
+      {/* input thực tế */}
       <Input.Password
+        autoFocus={true}
         value={currentPassword}
         onChange={(e) => {
           const value = e.target.value;

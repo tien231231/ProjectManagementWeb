@@ -1,4 +1,5 @@
 import ProjectInfo from "./ProjectInfo";
+import NotResult from "../../components/support/NotResult";
 import { setQuery } from "../../redux/slice/paramsSlice";
 import MemberList from "../Members/MemberList";
 import StagesPage from "../stagesPage/StagesPage";
@@ -23,6 +24,7 @@ export interface ProjectType {
   estimatedEndDate: Date;
   status: string;
   code: string;
+  _id: string;
 }
 
 const ProjectDetail: React.FC = () => {
@@ -57,10 +59,9 @@ const ProjectDetail: React.FC = () => {
         setProjectDetail(response.data.project);
         setIsLoading(false);
       } catch (err: any) {
-        console.log(err);
         setError(err);
         setIsLoading(false);
-        navigate("/notFoundPage");
+        // navigate("/notFoundPage");
       }
     };
     getProjectDetail();
@@ -93,18 +94,30 @@ const ProjectDetail: React.FC = () => {
   return (
     <div className="project-detail">
       {isLoading ? (
-        <Skeleton />
+        <Skeleton active />
       ) : (
-        <Space direction="vertical" size="large" style={{ display: "flex" }}>
-          <Breadcrumb items={breadcrumbItem} />
-          <Tabs
-            onTabClick={handleTabChange}
-            activeKey={queryParams.currentTab}
-            type="card"
-            size="large"
-            items={tabItems}
-          />
-        </Space>
+        <>
+          {projectDetail ? (
+            <Space
+              direction="vertical"
+              size="large"
+              style={{ display: "flex" }}
+            >
+              <div className="breadcrumb__project">
+                <Breadcrumb items={breadcrumbItem} />
+              </div>
+              <Tabs
+                onTabClick={handleTabChange}
+                activeKey={queryParams.currentTab}
+                type="card"
+                size="large"
+                items={tabItems}
+              />
+            </Space>
+          ) : (
+            <NotResult title={t("base:project")} />
+          )}
+        </>
       )}
     </div>
   );

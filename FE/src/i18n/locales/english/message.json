@@ -1,0 +1,11 @@
+{
+  "task": {
+    "Please input your task name": "Please input task name!",
+    "please select assignee": "please select assignee!",
+    "Select a person": "Select a person"
+  },
+  "stage": {
+    "Please input your stage name": "Please input your stage name!",
+    "Please fill it out completely": "Please fill it out completely!"
+  }
+}

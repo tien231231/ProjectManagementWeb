@@ -1,22 +1,24 @@
 import { setLogout } from "../../redux/slice/authSlice";
 import { BellOutlined, DownOutlined } from "@ant-design/icons";
-import { Button, Dropdown, Popover, Select, Space } from "antd";
+import { Button, Dropdown, Popover, Select, Space, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
+const { Text } = Typography;
+
 const Header = () => {
   const [language, setLanguage] = useState(1);
   const user = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
-  const handleLogout = () => {
-    dispatch(setLogout("Log Out"));
-  };
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation(["base"]);
 
   // const currentLanguage = locales[i18n.language as keyof typeof locales];
 
+  const handleLogout = () => {
+    dispatch(setLogout("Log Out"));
+  };
   useEffect(() => {
     if (localStorage.getItem("language")) {
       i18n.changeLanguage(
@@ -27,15 +29,14 @@ const Header = () => {
   const items = [
     {
       key: "1",
-      label: <Link to="/user/info">{user.userInfo.fullName} </Link>,
+      label: <Link to="/project/user/info">{t("base:userInfo")}</Link>,
     },
-    
     {
       key: "4",
       danger: true,
       label: (
         <Link to="/" onClick={handleLogout}>
-          Đăng xuất
+          {t("base:logout")}
         </Link>
       ),
     },
@@ -45,12 +46,12 @@ const Header = () => {
       <div className="header_logo">
         <Link to="/">
           <img
-            src="https://4218478784-files.gitbook.io/~/files/v0/b/gitbook-legacy-files/o/spaces%2F-MWcLXaW6te9yNIG__kn%2Favatar-1616661413606.png?generation=1616661413852661&alt=media"
-            alt="mindx"
+            src="https://i.imgur.com/r0MWGAZ.jpg"
+            alt="pm"
+            style={{ width: '50px', height: '25px' }}
           />
         </Link>
-        <span>ProjectManagement</span>
-        
+        <span>Project Management</span>
       </div>
       <div className="header_auth">
         <div className="language_action">
@@ -78,30 +79,27 @@ const Header = () => {
           </Popover>
         </div>
 
-        <span className="bell">
+        {/* <span className="bell">
           <BellOutlined />
-        </span>
+        </span> */}
         <div className="header_auth-user">
-         
+          <div className="dropdown__user">
+            <Dropdown
+              menu={{
+                items,
+              }}
+            >
+              <Text>
+                <Space>
+                  {user?.userInfo?.fullName.length < 13
+                    ? user?.userInfo?.fullName
+                    : `${user?.userInfo?.fullName.substring(0, 13)}...`}
+                  <DownOutlined />
+                </Space>
+              </Text>
+            </Dropdown>
+          </div>
           <div className="header__img">
-          <Dropdown
-            menu={{
-              items,
-            }}
-          >
-            <Link className="" to="/auth/info">
-              <Space>
-              <img
-              srcSet={`${
-                user.userInfo.avatar ||
-                "https://st.quantrimang.com/photos/image/072015/22/avatar.jpg"
-              } 2x`}
-              alt=""
-            />
-                
-              </Space>
-            </Link>
-          </Dropdown>
             <img
               srcSet={`${
                 user.userInfo.avatar ||

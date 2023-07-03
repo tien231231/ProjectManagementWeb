@@ -1,24 +1,26 @@
 .add-member-container {
   margin: 2rem 0;
   .add-member-item {
-    @include flex(row, space-between);
+    @include flex(row, null, null, null, 8px);
     margin: 1rem 0;
 
     .item-content {
-      @include flex(row, null, center);
-      gap: 8px;
+      width: 50%;
+      @include flex(row, null, center, null, 8px);
+      word-break: break-all;
     }
 
     .item-action {
-      width: 50%;
-
-      @include flex(row, space-between);
+      // width: 50%;
+      margin-left: auto;
+      @include flex(row, null, center, null, 8px);
     }
 
     img {
-      width: 24px;
-      height: auto;
-      border-radius: 16px;
+      min-width: 32px;
+      max-width: 32px;
+      height: 32px;
+      border-radius: 50%;
     }
   }
 }
@@ -42,8 +44,9 @@
     border-radius: 8px;
     img {
       width: 24px;
-      height: auto;
-      border-radius: 16px;
+      height: 24px;
+
+      border-radius: 50%;
     }
 
     &:hover {

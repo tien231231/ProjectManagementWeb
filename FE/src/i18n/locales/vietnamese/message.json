@@ -1,0 +1,11 @@
+{
+  "task": {
+    "Please input your task name": "Vui lòng nhập tên công việc!",
+    "please select assignee": "vui lòng chọn người thực hiện!",
+    "Select a person": "Chọn một người"
+  },
+  "stage": {
+    "Please input your stage name": "Vui lòng điền tên giai đoạn!",
+    "Please fill it out completely": "Vui lòng điền đầy đủ!"
+  }
+}

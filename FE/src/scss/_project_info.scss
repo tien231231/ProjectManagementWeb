@@ -1,4 +1,11 @@
 .project-info {
   max-width: 992px;
   margin-top: 1rem;
+
+  .description_title {
+    @include flex(row, null, center, null, 16px);
+    .ant-typography {
+      margin-bottom: 0.3em;
+    }
+  }
 }

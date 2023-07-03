@@ -1,11 +1,14 @@
 {
   "name": "Tên",
   "startDate": "Ngày bắt đầu",
+  "startingDate": "Ngày bắt đầu",
   "endDateExpected": "Ngày kết thúc dự kiến",
   "endDateActual": "Ngày kết thúc thực tế",
+
   "action": "Hành động",
   "createStage": "Tạo mới giai đoạn",
   "editStage": "Chỉnh sửa giai đoạn",
+  "loading": "Đang tải",
   "enterStageName": "Điền tên giai đoạn...",
   "addReview": "Thêm đánh giá",
   "review": "Đánh giá",
@@ -13,7 +16,11 @@
   "titleDeleteComment": "Xóa bình luận",
   "desDeleteComment": "Bạn có chắc chắn để xóa bình luận này?",
   "titleDeleteStage": "Xóa giai đoạn",
+  "titleDeleteProject": "Xóa dự án",
+  "desDeleteProject": "Bạn có chắc muốn xóa dự án này?",
   "desDeleteStage": "Bạn có chắc chắn xóa giai đoạn này?",
+  "dashboardProjectsListTitle": "Danh sách dự án",
+  "dashbaordTasksListTitle": "Công việc của bạn",
   "profileUser": {
     "avatar": "Ảnh đại diện",
     "choose photo": "Chọn ảnh",
@@ -41,16 +48,20 @@
   },
   "form": {
     "create task": "Tạo mới công việc",
+    "create project": "Tạo dự án mới",
     "edit task": "Chỉnh sửa công việc",
+    "edit project": "Chỉnh sửa thông tin dự án",
     "comments": "Bình luận",
+    "comment": "Bình luận",
     "information": "Thông tin",
     "title": "Tiêu đề",
     "job code": "Mã công việc",
+    "project code": "Mã dự án",
     "status": "Trạng thái",
     "type": "Kiểu công việc",
     "priority": "Độ ưu tiên",
     "creator": "Người tạo",
-    "assignee": "Người thi hành",
+    "assignee": "Người thực hiện",
     "date created": "Ngày tạo",
     "deadline": "Hạn chót",
     "description": "Mô tả",
@@ -66,11 +77,43 @@
     "assignment": "Nhiệm vụ",
     "issue": "Vấn đề",
     "cancel": "Hủy bỏ",
-
-    "done": "Đã hoàn thành"
+    "done": "Đã hoàn thành",
+    "members": "Thành viên",
+    "project name": "Tên dự án",
+    "all": "Tất cả",
+    "asc": "Tăng dần",
+    "desc": "Giảm dần",
+    "endDate": "Ngày kết thúc thực tế"
   },
   "task": {
+    "jobCode": "Tự động tạo",
     "includes": "Nhiệm vụ không tồn tại",
-    "activity": "Hoạt động"
+    "activity": "Hoạt động",
+    "update": "cập nhật",
+    "task": "công việc",
+    "comment": "bình luận",
+    "complete": "hoàn thành",
+    "create": "tạo",
+    "cancel": "hủy bỏ",
+    "type": "Loại công việc",
+    "task name": "Tên công việc",
+    "export": "Tải xuống danh sách",
+    "import": "Tải danh sách lên"
+  },
+  "member": {
+    "add member": "Thêm thành viên",
+    "member name": "Tên thành viên",
+    "role": "Vai trò",
+    "join date": "Ngày tham gia",
+    "manager": "Chủ dự án",
+    "leader": "Quản lý",
+    "supervisor": "Giám sát",
+    "member": "Thành viên",
+    "delete popup title": "Xóa thành viên",
+    "deltete popup desc": "Bạn có chắc muốn xóa thành viên này?"
+  },
+  "message": {
+    "requiredUsername": "Vui lòng nhập tên dự án!",
+    "requiredDes": "Vui lòng nhập mô tả cho dự án!"
   }
 }

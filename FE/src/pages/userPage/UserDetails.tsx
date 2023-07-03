@@ -1,8 +1,10 @@
 import InputFile from "./InputFile";
 import InputPassword, { InputPasswordTextArea } from "./InputPassword";
+import Sidebar from "../../components/sidebar/Sidebar";
 import { useAxios } from "../../hooks";
 import { updateUserInfo } from "../../redux/slice/authSlice";
 import userApi from "../../services/api/userApi";
+import { changeMsgLanguage } from "../../utils/changeMsgLanguage";
 import { RightOutlined } from "@ant-design/icons";
 import { DatePicker, Select, Space } from "antd";
 import { Modal, Skeleton } from "antd";
@@ -117,7 +119,11 @@ const UserDetails = () => {
           [fieldUserEdit.field]: fieldUserEdit.data,
         })
         .then((res: any) => {
-          showMessage("success", res.message, 2);
+          showMessage(
+            "success",
+            changeMsgLanguage(res?.message, "Thay đổi thành công"),
+            2
+          );
           setOpen(false);
           setFieldUserEdit({
             field: "",
@@ -127,7 +133,11 @@ const UserDetails = () => {
           setCountReload((prev) => prev + 1);
         })
         .catch((err: any) => {
-          showMessage("error", err.response.data?.message, 2);
+          showMessage(
+            "error",
+            changeMsgLanguage(err.response?.data?.message, "Thay đổi thất bại"),
+            2
+          );
         });
     }
     // Yêu cầu mật khẩu -- các field private
@@ -139,7 +149,11 @@ const UserDetails = () => {
           oldPassword: currentPassword,
         })
         .then((res: any) => {
-          showMessage("success", res.message, 2);
+          showMessage(
+            "success",
+            changeMsgLanguage(res?.message, "Thay đổi thành công"),
+            2
+          );
           setOpen(false);
           setCountReload((prev) => prev + 1);
           setFieldUserEdit({
@@ -149,7 +163,11 @@ const UserDetails = () => {
           });
         })
         .catch((err: any) => {
-          showMessage("error", err.response.data?.message, 2);
+          showMessage(
+            "error",
+            changeMsgLanguage(err.response?.data?.message, "Thay đổi thất bại"),
+            2
+          );
         });
     }
   };
@@ -159,13 +177,21 @@ const UserDetails = () => {
     userApi
       .editUser(dataImage)
       .then((res: any) => {
-        showMessage("success", res.message, 2);
+        showMessage(
+          "success",
+          changeMsgLanguage(res?.message, "Thay đổi thành công"),
+          2
+        );
         setModalImage(false);
         setCountReload((prev) => prev + 1);
         URL.revokeObjectURL(imagePreview.preview);
       })
       .catch((err: any) => {
-        showMessage("error", err.response.data?.message, 2);
+        showMessage(
+          "error",
+          changeMsgLanguage(err.response?.data?.message, "Thay đổi thất bại"),
+          2
+        );
       });
   };
   //show modal text
@@ -174,6 +200,7 @@ const UserDetails = () => {
   };
   //tắt modal
   const handleCancel = () => {
+    setCurrentPassword("");
     setOpen(false);
     setModalImage(false);
     setImagePreview(null);
@@ -199,7 +226,9 @@ const UserDetails = () => {
   };
 
   return isLoading && !userInfo ? (
-    <Skeleton />
+    <div style={{ paddingTop: "30px" }}>
+      <Skeleton active />
+    </div>
   ) : (
     <div className="user__container">
       {contextHolder}
@@ -209,9 +238,11 @@ const UserDetails = () => {
             <h2>{t("content:profileUser.title basic")}</h2>
             <p>{t("content:profileUser.sub title basic")}</p>
           </div>
-          <div className=" wrapper" onClick={() => setModalImage(true)}>
+          <div className="wrapper" onClick={() => setModalImage(true)}>
             <span>{t("content:profileUser.avatar")}</span>
-            <span>{t("content:profileUser.sub avatar")}</span>
+            <span className="sub_avatar">
+              {t("content:profileUser.sub avatar")}
+            </span>
             <div className="avatar">
               <img
                 src={imagePreview?.preview || userInfo?.avatar}
@@ -311,6 +342,7 @@ const UserDetails = () => {
         <div style={{ padding: "13px 0" }}>
           {fieldUserEdit.field === "dob" && (
             <DatePicker
+              autoComplete="off"
               style={{ width: "50%" }}
               value={dayjs(fieldUserEdit?.data || userInfo?.dob)}
               onChange={handleChangeDay}
@@ -363,6 +395,7 @@ const UserDetails = () => {
           )}
         </div>
       </Modal>
+
       {/* modal với field image */}
       <Modal
         title={t("content:profileUser.avatar")}
@@ -388,6 +421,7 @@ const UserDetails = () => {
         </div>
       </Modal>
     </div>
+    // </div>
   );
 };
 

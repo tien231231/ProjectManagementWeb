@@ -1,16 +1,28 @@
 {
   "ok": "Xác nhận",
+  "empty": "Trống",
   "loading": "Đang tải",
   "cancel": "Hủy bỏ",
   "edit": "Chỉnh sửa",
   "delete": "Xóa",
   "create": "Tạo mới",
   "update": "Cập nhật",
+  "send": "Gửi",
   "done": "Đã hoàn thành",
-
   "generalInformation": "Thông tin chung",
   "stages": "Giai đoạn",
+  "task": "Công việc",
+  "project": "Dự án",
   "members": "Thành viên",
   "home": "Trang chủ",
-  "loadMore": "Xem thêm"
+  "loadMore": "Xem thêm",
+  "detail": "Xem chi tiết",
+  "before": "Trước",
+  "after": "Sau",
+  "success": "Thành công",
+  "error": "Thất bại",
+  "logout": "Đăng xuất",
+  "backHome": "Trở về trang chủ",
+  "notFound": "không tồn tại",
+  "userInfo": "Thông tin tài khoản"
 }

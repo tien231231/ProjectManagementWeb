@@ -1,5 +1,6 @@
 
 QUẢN LÝ CÔNG VIỆC DỰ ÁN
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/92dbf40a-be2f-4c38-aecd-526059b7c707)
 1. Mô tả
 Ứng dụng web quản lý công việc dự án được tạo ra nhằm giúp cho đội dự án phần mềm có thể dễ dàng và thuận tiên trong việc quản lý, phân công công việc và giao tiếp giữa các thành viên trong đội dự án.
 Phạm vi sử dụng: trong 1 công ty công nghệ.
@@ -110,7 +111,3 @@ o	Text editor, IDE: VS Code, …
 o	UI/UX Design: Figma, …
 o	Source Control: GIT + (Github)
 o	Mail: mailtrap.io
-
-
-![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/44ba6c86-c6ac-48df-9b21-4946ccbdb6d3)
-![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/c8705462-a119-48de-a108-882414dc3bd7)

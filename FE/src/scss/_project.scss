@@ -2,10 +2,15 @@
 .project_page-header {
   padding: 30px;
   display: flex;
+  flex-wrap: wrap;
   @include maxWidth($tablet-width) {
-    flex-direction: column;
     gap: 12px;
     padding-bottom: 0;
+    padding-top: 0;
+  }
+  @include maxWidth($mobile-width) {
+    gap: 12px;
+    padding: 0 10px;
   }
   .header_left {
     flex-shrink: 0;
@@ -42,7 +47,12 @@
   }
 }
 
-.project-name {
+.project_name {
   cursor: pointer;
   color: #1677ff;
+}
+@media screen and (max-width: 768px) {
+  .breadcrumb__project {
+    padding-left: 10px;
+  }
 }

@@ -1,14 +1,20 @@
-import { IReview } from "../../pages/stagesPage/StageReview";
-import { useAppSelector } from "../../redux/hook";
-import { RootState } from "../../redux/store";
-import stageApi from "../../services/api/stageApi";
-import { Input, Modal, Popconfirm } from "antd";
-import { NoticeType } from "antd/es/message/interface";
-import parse from "html-react-parser";
-import moment from "moment";
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { v4 as uuid } from "uuid";
+import { IReview } from '../../pages/stagesPage/StageReview';
+import { useAppSelector } from '../../redux/hook';
+import { RootState } from '../../redux/store';
+import stageApi from '../../services/api/stageApi';
+import { changeMsgLanguage } from '../../utils/changeMsgLanguage';
+import { Input, Modal, Popconfirm } from 'antd';
+import { NoticeType } from 'antd/es/message/interface';
+import parse from 'html-react-parser';
+import moment from 'moment';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useRef,
+  useState
+  } from 'react';
+import { useTranslation } from 'react-i18next';
+import { v4 as uuid } from 'uuid';
 
 const { TextArea } = Input;
 
@@ -32,31 +38,52 @@ const Comment: React.FC<IComment> = ({
   const { t } = useTranslation(["content", "base"]);
   //hàm xác nhận xóa
   const handleDelete = (id: string) => {
-    showMessage("loading", "Loading...");
+    showMessage("loading", `${t("content:loading")}...`);
+
     stageApi
       .deleteComment(stageId as string, id)
       .then((res: any) => {
-        showMessage("success", res?.message, 2);
+        showMessage(
+          "success",
+          changeMsgLanguage(res?.message, "Xóa thành công"),
+          2
+        );
         setReviewAdded?.((prev) => prev + 1);
       })
       .catch((err) => {
-        showMessage("error", err.response.data?.message, 2);
+        showMessage(
+          "error",
+          changeMsgLanguage(err.response?.data?.message, "Xóa thất bại"),
+          2
+        );
       });
   };
   //hàm sửa
   const handleEdit = () => {
     const myComment = myCommentRef.current;
     if (myComment) {
-      showMessage("loading", "Loading...");
+      showMessage("loading", `${t("content:loading")}...`);
+
       stageApi
         .editComment(stageId as string, reviewComment?._id as string, myComment)
         .then((res: any) => {
-          showMessage("success", res?.message, 2);
+          showMessage(
+            "success",
+            changeMsgLanguage(res?.message, "Chỉnh sửa thành công"),
+            2
+          );
           setReviewAdded?.((prev) => prev + 1);
           setOpen(false);
         })
         .catch((err) => {
-          showMessage("error", err.response.data?.message, 2);
+          showMessage(
+            "error",
+            changeMsgLanguage(
+              err.response?.data?.message,
+              "Chỉnh sửa thất bại"
+            ),
+            2
+          );
         });
     }
   };
@@ -106,7 +133,8 @@ const Comment: React.FC<IComment> = ({
                       event.preventDefault();
                     }
                   }}
-                  rows={4}
+                  maxLength={500}
+                  autoSize={{ minRows: 4, maxRows: 8 }}
                 />
               </Modal>
               <span className="">

@@ -2,6 +2,8 @@ import React from "react";
 import { Descriptions, Typography, Button } from "antd";
 import dayjs from "dayjs";
 import { ProjectType } from "./ProjectDetail";
+import { useTranslation } from "react-i18next";
+import { setStatusLabel } from "../../utils/setStatusLabel";
 
 const { Title, Text } = Typography;
 
@@ -10,56 +12,44 @@ interface PropTypes {
 }
 
 const ProjectInfo: React.FC<PropTypes> = ({ projectDetail }) => {
-  let bgColor: string = "";
-  switch (projectDetail?.status) {
-    case "ongoing":
-      bgColor = "#F0E155";
-      break;
-    case "completed":
-      bgColor = "#44CB39";
-      break;
-    case "suspended":
-      bgColor = "#EC2B2B";
-      break;
-    case "preparing":
-      bgColor = "#2E55DE";
-      break;
-    default:
-      bgColor = "transparent";
-      break;
-  }
+  const { t, i18n } = useTranslation(["content", "base"]);
+  const { bgColor, statusLabel, fontColor } = setStatusLabel(
+    projectDetail?.status as string
+  );
 
   return (
     <div className="project-info">
       <Descriptions
         bordered
         layout="vertical"
-        column={2}
+        column={{ xs: 1, sm: 2 }}
         title={
-          <>
+          <div className="description_title">
             <Title level={3}>{projectDetail?.name}</Title>
-          </>
+          </div>
         }
       >
-        <Descriptions.Item label="Project Code">
+        <Descriptions.Item label={`${t("content:form.project code")}`}>
           {projectDetail?.code}
         </Descriptions.Item>
-        <Descriptions.Item label="Project Status">
+        <Descriptions.Item label={`${t("content:form.status")}`}>
           <Button
             type="primary"
             shape="round"
             style={{ backgroundColor: bgColor }}
           >
-            <Text strong> {projectDetail?.status.toUpperCase()}</Text>
+            <Text strong style={{ color: fontColor }}>
+              {statusLabel}
+            </Text>
           </Button>
         </Descriptions.Item>
-        <Descriptions.Item label="Description" span={2}>
+        <Descriptions.Item label={`${t("content:form.description")}`} span={2}>
           {projectDetail?.description}
         </Descriptions.Item>
-        <Descriptions.Item label="Start Date">
+        <Descriptions.Item label={`${t("content:startingDate")}`}>
           {dayjs(projectDetail?.startDate).format("DD-MM-YYYY")}
         </Descriptions.Item>
-        <Descriptions.Item label="End Date">
+        <Descriptions.Item label={`${t("content:endDateExpected")}`}>
           {dayjs(projectDetail?.estimatedEndDate).format("DD-MM-YYYY")}
         </Descriptions.Item>
       </Descriptions>

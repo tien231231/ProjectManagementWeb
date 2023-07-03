@@ -14,11 +14,13 @@ html {
   right: 0;
   bottom: 0;
 }
+
 .container {
   display: flex;
   position: relative;
   height: 100%;
   width: 100%;
+  overflow: auto;
 }
 .container_content {
   flex: 1;

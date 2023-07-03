@@ -1,20 +1,22 @@
 import FormStages from "./FormStages";
 import StageReview from "./StageReview";
 import Loading from "../../components/support/Loading";
-import { listStages } from "../../data/statges";
-import { useAxios } from "../../hooks";
 import useIsBoss from "../../hooks/useIsBoss";
-import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { reloadSidebar } from "../../redux/slice/menuSlice";
+import { useAppSelector } from "../../redux/hook";
 import stageApi from "../../services/api/stageApi";
+import { changeMsgLanguage } from "../../utils/changeMsgLanguage";
 import { ProjectType } from "../projectPage/ProjectDetail";
 import { DeleteFilled, EditFilled, EyeFilled } from "@ant-design/icons";
 import Search from "antd/es/input/Search";
-import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import {
+  createSearchParams,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import {
   Button,
   message,
@@ -23,6 +25,7 @@ import {
   Popconfirm,
   Space,
   Table,
+  Typography,
 } from "antd";
 import useMessageApi, {
   UseMessageApiReturnType,
@@ -31,6 +34,7 @@ import useMessageApi, {
 import type { ColumnsType } from "antd/es/table";
 
 export interface IStages {
+  key?: string;
   _id?: string;
   name: string;
   startDate: Date;
@@ -56,10 +60,13 @@ interface PropTypes {
   projectDetail?: ProjectType;
 }
 
+const { Text } = Typography;
+
 const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [createStages, setCreateStages] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>();
+  const [loadingSearch, setLoadingSearch] = useState(false);
   const [finishCount, setFinishCount] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -72,21 +79,22 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
   });
   const [editStages, setEditStages] = useState<{
     status: boolean;
-    stages: IStages | {};
+    stages: IStages | any;
   }>({
     status: false,
-    stages: {},
+    stages: null,
   });
   const [searchParams, setSearchParams] = useSearchParams();
   const searchRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const params = useParams();
-  const dispatch = useAppDispatch();
+
   const { showMessage, contextHolder }: UseMessageApiReturnType =
     useMessageApi();
   const token: string = useAppSelector(
-    (state: any) => state.auth.userInfo.token
+    (state: any) => state.auth?.userInfo?.token
   );
   const { t, i18n } = useTranslation(["content", "base"]);
+  const navigate = useNavigate();
   const { isBoss } = useIsBoss([]);
 
   // lấy dữ liệu stages theo page
@@ -100,7 +108,6 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
       .then((res: any) => {
         setStagesData(res);
         setLoading(false);
-        dispatch(reloadSidebar());
       })
       .catch((err: any) => {
         setLoading(false);
@@ -114,17 +121,26 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
     stageApi
       .deleteStage(stages.key as string)
       .then((res: any) => {
-        showMessage("success", res?.message, 2);
+        showMessage(
+          "success",
+          changeMsgLanguage(res?.message, "Xóa thành công"),
+          2
+        );
         setFinishCount((prev) => prev + 1);
       })
       .catch((err) => {
-        showMessage("error", err.response.data?.message, 2);
+        showMessage(
+          "error",
+          changeMsgLanguage(err.response?.data?.message, "Xóa thất bại"),
+          2
+        );
       });
   };
 
   //hàm gọi api khi search
   const handleChangeSearch = (event: any) => {
     let value = event?.target.value;
+
     setSearchInput(value);
     setSearchParams({
       currentTab: "Stages",
@@ -148,6 +164,8 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
       clearTimeout(searchRef.current);
     }
     searchRef.current = setTimeout(() => {
+      setLoadingSearch(true);
+
       if (searchParams.get("name")) {
         const subParams = {
           page: 1,
@@ -157,6 +175,8 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
           .SearchStage(params.projectId as string, subParams)
           .then((res: any) => {
             setStagesData(res);
+            setLoadingSearch(false);
+
             setSearchParams({
               currentTab: "Stages",
               name: (searchParams.get("name") as string) || "",
@@ -164,13 +184,27 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
             });
           })
           .catch((err) => {});
+      } else {
+        stageApi
+          .SearchStage(params.projectId as string)
+          .then((res: any) => {
+            setStagesData(res);
+            setLoadingSearch(false);
+          })
+          .catch((err) => {
+            message.error(err.response.data.message);
+          });
       }
-    }, 1000);
+    }, 800);
   }, [searchInput]);
 
   //hám search
   const handleSearchStage = (value: string) => {
     setLoading(true);
+    setLoadingSearch(true);
+    if (searchRef.current) {
+      clearTimeout(searchRef.current);
+    }
     if (value) {
       const subParams = {
         page: 1,
@@ -181,6 +215,8 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
         .then((res: any) => {
           setStagesData(res);
           setLoading(false);
+          setLoadingSearch(false);
+
           setSearchInput("");
         })
         .catch((err) => {
@@ -192,6 +228,8 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
         .SearchStage(params.projectId as string)
         .then((res: any) => {
           setStagesData(res);
+          setLoadingSearch(false);
+
           setLoading(false);
         })
         .catch((err) => {
@@ -200,6 +238,14 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
         });
     }
   };
+
+  const navigateTasks = (record: any) => {
+    navigate({
+      pathname: `${record.key}`,
+      search: `${createSearchParams({ type: "all" })}`,
+    });
+  };
+
   //dữ liệu table
   const columns: ColumnsType<DataType> = useMemo(
     () => [
@@ -210,7 +256,14 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
 
         sorter: (a, b) => a.name.localeCompare(b.name),
         render: (_, record: DataType) => (
-          <Link to={`/${params.projectId}/${record.key}`}>{record.name}</Link>
+          <Text
+            className="stage_name"
+            onClick={() => {
+              navigateTasks(record);
+            }}
+          >
+            {record.name}
+          </Text>
         ),
       },
 
@@ -294,14 +347,13 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
   // dữ liệu stages trong table
   const data: DataType[] = useMemo(() => {
     if (!stagesData?.stages) return [];
-
     return stagesData.stages.map((stage: IStages) => ({
       key: stage._id,
       name: stage.name,
-      startDate: moment(stage.startDate).format("YYYY-MM-DD"),
-      endDateExpected: moment(stage.endDateExpected).format("YYYY-MM-DD"),
+      startDate: moment(stage.startDate).format("DD-MM-YYYY"),
+      endDateExpected: moment(stage.endDateExpected).format("DD-MM-YYYY"),
       endDateActual: stage.endDateActual
-        ? moment(stage.endDateActual).format("YYYY-MM-DD")
+        ? moment(stage.endDateActual).format("DD-MM-YYYY")
         : "",
     }));
   }, [stagesData?.stages]);
@@ -335,6 +387,7 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
               placeholder={t("content:enterStageName")}
               size="large"
               style={{ width: "300px" }}
+              loading={loadingSearch}
             />
           </Space>
         </div>
@@ -395,6 +448,7 @@ const StagesPage: React.FC<PropTypes> = (props: PropTypes) => {
         maskClosable={false}
         style={{ top: "50px" }}
         footer={[]}
+        className="responsive-modal"
       >
         <StageReview stageId={stageCurrentReview} />
       </Modal>

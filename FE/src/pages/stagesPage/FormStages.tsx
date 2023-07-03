@@ -1,11 +1,13 @@
 import { IStages } from "./StagesPage";
 import { UseMessageApiReturnType } from "../../components/support/Message";
 import stageApi from "../../services/api/stageApi";
+import taskApi from "../../services/api/taskApi";
+import { changeMsgLanguage } from "../../utils/changeMsgLanguage";
 import { ProjectType } from "../projectPage/ProjectDetail";
 import { CloseOutlined, LoadingOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router";
 
@@ -36,7 +38,7 @@ interface IForm {
   status?: boolean;
   endDateActual?: boolean;
   button: string;
-  editStages?: { status: boolean; stages: IStages | {} };
+  editStages?: { status: boolean; stages: IStages };
   projectDetail?: ProjectType;
   showMessage: UseMessageApiReturnType["showMessage"];
   setCreateStages?: Dispatch<SetStateAction<boolean>>;
@@ -61,7 +63,9 @@ const FormStages: React.FC<IForm> = ({
   const [form] = Form.useForm();
   const params = useParams();
   const [loading, setLoading] = useState(false);
-  const { t } = useTranslation(["content", "base"]);
+  const { t } = useTranslation(["content", "base", "message"]);
+
+  const [stageCurrent, setStageCurrent] = useState<IStages | null>(null);
 
   // hàm xử lí form
   const onFinish = (stages: IStagesCreate) => {
@@ -78,13 +82,24 @@ const FormStages: React.FC<IForm> = ({
         .then((res: any) => {
           setLoading(false);
           setCreateStages?.(false);
-          showMessage("success", res.message, 2);
+          showMessage(
+            "success",
+            changeMsgLanguage(res?.message, "Tạo mới thành công"),
+            2
+          );
           //để gọi lại api get all(đối số useEffect)
           setFinishCount((prev) => prev + 1);
         })
         .catch((err) => {
           setLoading(false);
-          showMessage("error", err.response.data?.message, 2);
+          showMessage(
+            "error",
+            changeMsgLanguage(
+              err.response.data?.message,
+              "Ngày bắt đầu phải sau ngày kết thúc cuối cùng và trước ngày kết thúc dự kiến ​"
+            ),
+            2
+          );
         });
     } else {
       if ("key" in editStages.stages) {
@@ -104,42 +119,55 @@ const FormStages: React.FC<IForm> = ({
               status: false,
               stages: {},
             });
-            showMessage("success", res.message, 2);
+            showMessage(
+              "success",
+              changeMsgLanguage(res?.message, "Chỉnh sửa thành công"),
+              2
+            );
           })
           .catch((err) => {
             setLoading(false);
-            showMessage("error", err.response.data?.message, 2);
+            showMessage(
+              "error",
+              changeMsgLanguage(
+                err.response.data?.message,
+                "Chỉnh sửa thất bại"
+              ),
+              2
+            );
           });
       }
     }
   };
 
-  const initialValues = editStages
+  useEffect(() => {
+    if (
+      editStages &&
+      editStages.stages &&
+      typeof editStages.stages.key === "string"
+    ) {
+      stageApi.getStage(editStages.stages.key).then((res: any) => {
+        setStageCurrent(res?.stage);
+      });
+    }
+  }, [editStages]);
+
+  const initialValues = stageCurrent
     ? {
-        name:
-          editStages?.stages && "name" in editStages.stages
-            ? editStages.stages.name
-            : "",
-        startDate: dayjs(
-          editStages?.stages && "startDate" in editStages.stages
-            ? editStages.stages.startDate
-            : "",
-          "YYYY-MM-DD"
-        ),
-        endDateExpected: dayjs(
-          editStages?.stages && "endDateExpected" in editStages.stages
-            ? editStages.stages.endDateExpected
-            : "",
-          "YYYY-MM-DD"
-        ),
-        endDateActual:
-          editStages?.stages &&
-          "endDateActual" in editStages.stages &&
-          editStages.stages.endDateActual
-            ? dayjs(editStages.stages.endDateActual, "YYYY-MM-DD")
-            : "",
+        name: stageCurrent?.name,
+        startDate: dayjs(stageCurrent?.startDate),
+        endDateExpected: dayjs(stageCurrent?.endDateExpected),
+        ...(stageCurrent?.endDateActual && {
+          endDateActual: dayjs(stageCurrent?.endDateActual),
+        }),
       }
     : {};
+
+  useEffect(() => {
+    if (stageCurrent) {
+      form.setFieldsValue(initialValues);
+    }
+  }, [initialValues, stageCurrent]);
   const breadcrumbItem = useMemo(
     () => [
       { title: projectDetail?.name },
@@ -152,6 +180,7 @@ const FormStages: React.FC<IForm> = ({
     ],
     [editStages]
   );
+
   return (
     <>
       <div className="modal">
@@ -188,7 +217,7 @@ const FormStages: React.FC<IForm> = ({
               rules={[
                 {
                   required: true,
-                  message: "Please input your stage name!",
+                  message: t("message:stage.Please input your stage name"),
                 },
               ]}
             >
@@ -203,7 +232,7 @@ const FormStages: React.FC<IForm> = ({
                   rules={[
                     {
                       required: true,
-                      message: " Please fill it out completely",
+                      message: t("message:stage.Please fill it out completely"),
                     },
                   ]}
                 >
@@ -212,10 +241,15 @@ const FormStages: React.FC<IForm> = ({
                     disabledDate={(current) => {
                       const endDateExpected =
                         form.getFieldValue("endDateExpected");
-                      return endDateExpected && current
-                        ? current < dayjs(Date.now()) ||
-                            current > dayjs(endDateExpected)
-                        : current < dayjs(Date.now());
+                      const currentDate = dayjs();
+                      // Disable dates earlier than current date or after expected end date
+                      if (
+                        (endDateExpected && current > dayjs(endDateExpected)) ||
+                        current < currentDate.startOf("day")
+                      ) {
+                        return true;
+                      }
+                      return false;
                     }}
                   />
                 </Form.Item>
@@ -227,7 +261,7 @@ const FormStages: React.FC<IForm> = ({
                   rules={[
                     {
                       required: true,
-                      message: " Please fill it out completely",
+                      message: t("message:stage.Please fill it out completely"),
                     },
                   ]}
                 >
@@ -237,8 +271,9 @@ const FormStages: React.FC<IForm> = ({
                       const startDate = form.getFieldValue("startDate");
                       return (
                         current &&
-                        (current < dayjs(Date.now()) ||
-                          current <= dayjs(startDate))
+                        (current < dayjs() ||
+                          dayjs(current).startOf("day") <=
+                            dayjs(startDate).startOf("day"))
                       );
                     }}
                   />

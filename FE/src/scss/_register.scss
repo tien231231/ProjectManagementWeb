@@ -1,74 +1,75 @@
-@import './mixin';
+@import "./mixin";
 
 .register {
-    position: relative;
+  position: relative;
 
-    img {
-        @include backgroundImg
+  img {
+    @include backgroundImg;
+  }
+
+  .form-container {
+    @include formContainer;
+  }
+
+  .form-layout {
+    margin: auto;
+    padding: 0 4rem;
+    max-width: 100%;
+
+    .ant-col.ant-form-item-label {
+      padding: 0;
     }
 
-    .form-container {
-        @include formContainer
-    }
+    .ant-form-item-control-input {
+      text-align: center;
 
-    .form-layout {
-        margin: auto;
-        padding: 0 4rem;
-        max-width: 100%;
-    
-        .ant-col.ant-form-item-label {
-            padding: 0 
-        }
-    
-        .ant-form-item-control-input {
-            text-align: center;
-    
-            button {
-                width: 100%;
-            }
-        }
+      button {
+        width: 100%;
+      }
     }
+  }
 
-    .ant-form-item:last-child {
-        button {
-            margin-top: 1rem;
-        }
+  .ant-form-item:last-child {
+    button {
+      margin-top: 1rem;
     }
+  }
 
-    .form-title {
-        text-align: center;
-        margin: 2rem 4rem;
-    }
+  .form-title {
+    text-align: center;
+    margin: 2rem 4rem;
+  }
 }
 
 .register-divider {
-    max-width: 100%;
-    padding: 0 4rem;
+  max-width: 100%;
+  padding: 0 4rem;
 }
 
 .google-register-button {
-    width: 100%;  
-    padding: 0 4rem;
+  width: 100%;
+  padding: 0 4rem;
 
-    button {
-        width: 100%;
-    }
+  button {
+    width: 100%;
+  }
 }
 
 // Style cho page phụ Verfiy Register
 .register-verify {
-    position: relative;
-        img {
-           @include backgroundImg
-        }
+  position: relative;
 
-        .content {
-            text-align: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            margin-left: auto;
-            margin-right:auto; 
-        }
+  img {
+    @include backgroundImg;
+  }
+
+  .content {
+    @include formContainer;
+    text-align: center;
+    padding-top: 32px;
+
+    .content_text {
+      font-size: 16px;
+    }
+  }
 }

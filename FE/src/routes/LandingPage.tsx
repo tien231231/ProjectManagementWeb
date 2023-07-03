@@ -1,11 +1,22 @@
-import React from "react";
-import { Routes, Route } from "react-router-dom";
+import ForgotPassword from "../pages/Login/ForgotPassword";
+import Login from "../pages/Login/Login";
 import Register from "../pages/Register/Register";
 import RegisterVerify from "../pages/Register/RegisterVerify";
-import Login from "../pages/Login/Login";
-import ForgotPassword from "../pages/Login/ForgotPassword";
+import { useAppSelector } from "../redux/hook";
+import { RootState } from "../redux/store";
+import React, { useEffect } from "react";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
 function LandingPage() {
+  const navigate = useNavigate();
+  const token = useAppSelector(
+    (state: RootState) => state.auth?.userInfo?.token
+  );
+  useEffect(() => {
+    if (!token) {
+      navigate("/");
+    }
+  }, [token]);
   return (
     <div>
       <Routes>

@@ -1,4 +1,9 @@
+import { images } from "../../assets/images/index";
+import { useAppDispatch, useAppSelector } from "../../redux/hook";
+import { requestLogin } from "../../redux/store";
+import { GoogleOutlined, LoadingOutlined } from "@ant-design/icons";
 import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Form,
   Button,
@@ -8,34 +13,32 @@ import {
   Checkbox,
   notification,
 } from "antd";
-import { LoadingOutlined, GoogleOutlined } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../redux/hook";
-import { images } from "../../assets/images/index";
-import { requestLogin } from "../../redux/store";
+import useMessageApi, {
+  UseMessageApiReturnType,
+} from "../../components/support/Message";
 
 const { Title, Paragraph } = Typography;
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [form] = Form.useForm();
-  const [api, contextHolder] = notification.useNotification();
+  // const [api, contextHolder] = notification.useNotification();
   const { isLoading } = useAppSelector((state) => {
     return state.auth;
   });
   const dispatch = useAppDispatch();
+  const { showMessage, contextHolder }: UseMessageApiReturnType =
+    useMessageApi();
 
   const onFinish = async (requestBody: any) => {
     dispatch(requestLogin(requestBody))
       .unwrap()
       .then(() => {
-        navigate("/");
+        // navigate("/");
+        navigate(-1);
       })
-      .catch((error) => {
-        api["error"]({
-          message: "Error",
-          description: error.message,
-        });
+      .catch((err) => {
+        showMessage("error", err, 2);
       });
   };
 
@@ -61,15 +64,12 @@ const Login: React.FC = () => {
           {/* Email Field */}
           <Form.Item
             name="credential"
-            label="E-mail"
+            label="E-mail/Username"
             rules={[
               {
-                type: "email",
-                message: "The input is not valid E-mail!",
-              },
-              {
                 required: true,
-                message: "Please input your E-mail!",
+                message: "Please input your E-mail or Username",
+                whitespace: true,
               },
             ]}
           >
@@ -109,15 +109,6 @@ const Login: React.FC = () => {
           Don't have account?&nbsp;
           <Link to="/register">Sign up</Link>
         </Paragraph>
-        <Divider className="login-divider" orientation="center" plain>
-          Or
-        </Divider>
-        <div className="google-register-button">
-          <Button type="primary" size="large">
-            <GoogleOutlined />
-            Login with Google
-          </Button>
-        </div>
       </div>
     </div>
   );

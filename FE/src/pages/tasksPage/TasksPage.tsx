@@ -1,33 +1,34 @@
-import TaskForm, { ITask } from "./TaskForm";
+import TaskForm, { ITask, IUser } from "./TaskForm";
 import TaskHistory from "./TaskHistory";
 import TaskInfo from "./TaskInfo";
-import { descriptionTest } from "../../data/statges";
+import { useAxios } from "../../hooks";
 import { useAppSelector } from "../../redux/hook";
-import { setQuery } from "../../redux/slice/paramsSlice";
+import { deleteQuery, setQuery } from "../../redux/slice/paramsSlice";
 import { RootState } from "../../redux/store";
 import taskApi from "../../services/api/taskApi";
+import { changeMsgLanguage } from "../../utils/changeMsgLanguage";
+import { setPriority } from "../../utils/setPriority";
 import axios from "axios";
 import _ from "lodash";
 import moment from "moment";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import * as Scroll from "react-scroll";
 import {
-  EyeOutlined,
   ClockCircleOutlined,
-  DoubleRightOutlined,
-  DownOutlined,
-  UpOutlined,
-  PauseOutlined,
+  LoadingOutlined,
+  SearchOutlined,
+  DownloadOutlined,
+  UploadOutlined,
+  FilterOutlined,
 } from "@ant-design/icons";
 
 import useMessageApi, {
   UseMessageApiReturnType,
 } from "../../components/support/Message";
-
 import {
   Breadcrumb,
   Button,
@@ -39,18 +40,23 @@ import {
   Tabs,
   Typography,
   Tooltip,
-  message,
+  Row,
+  Col,
+  Upload,
+  Skeleton,
+  Dropdown,
 } from "antd";
 import type { TabsProps } from "antd";
+import { setupTasks } from "../../utils/setupTasksList";
 
-const { Text, Title } = Typography;
+const { Title, Text } = Typography;
 const { Search } = Input;
 
-interface ColumnData {
+export interface ColumnData {
   id: string;
-
   title: string;
   items: any[];
+  dropAllow: boolean;
 }
 
 interface TaskItemProp {
@@ -58,27 +64,71 @@ interface TaskItemProp {
   handleOpenInfoTask?: (task: ITask) => void;
 }
 
+interface FilterItemsProps {
+  allTasks: ITask[];
+  setTasksColumns: React.Dispatch<React.SetStateAction<ColumnData[]>>;
+  className: string;
+}
+
+const initialData: ColumnData[] = [
+  {
+    id: "open",
+    title: "Open",
+    items: [],
+    dropAllow: true,
+  },
+  {
+    id: "inprogress",
+    title: "In Progress",
+    items: [],
+    dropAllow: true,
+  },
+  {
+    id: "review",
+    title: "In Review",
+    items: [],
+    dropAllow: true,
+  },
+  {
+    id: "reopen",
+    title: "Re-Open",
+    items: [],
+    dropAllow: true,
+  },
+  {
+    id: "done",
+    title: "Done",
+    items: [],
+    dropAllow: true,
+  },
+  {
+    id: "cancel",
+    title: "Cancel",
+    items: [],
+    dropAllow: true,
+  },
+];
+
 const TaskItem: React.FC<TaskItemProp> = ({ task, handleOpenInfoTask }) => {
-  let priority = null;
-  switch (task.priority) {
-    case "lowest":
-      priority = <DoubleRightOutlined style={{ transform: "rotate(90deg)" }} />;
-      break;
-    case "low":
-      priority = <DownOutlined />;
-      break;
-    case "medium":
-      priority = <PauseOutlined style={{ transform: "rotate(90deg)" }} />;
-      break;
-    case "high":
-      priority = <UpOutlined />;
-      break;
-    case "highest":
-      priority = (
-        <DoubleRightOutlined style={{ transform: "rotate(270deg)" }} />
-      );
-      break;
-  }
+  const [bgColor, setBgColor] = useState<string>("");
+  let priority = setPriority(task.priority);
+
+  //set highligh cho deadline
+  useEffect(() => {
+    const now = new Date();
+    const deadline = new Date(task.deadline);
+    const hourBetweenDates =
+      (deadline.getTime() - now.getTime()) / (60 * 60 * 1000);
+    if (task.status !== "done") {
+      if (hourBetweenDates < 24) {
+        setBgColor("#E6883f");
+      }
+      if (hourBetweenDates < 0) {
+        setBgColor("#EC2B2B");
+      }
+    }
+  }, [task]);
+
   return (
     <>
       <div
@@ -106,60 +156,225 @@ const TaskItem: React.FC<TaskItemProp> = ({ task, handleOpenInfoTask }) => {
             <img src={task.assignee.avatar} alt="user-avatar" />
           </Tooltip>
         </div>
-        <div className="task_deadline">
-          <ClockCircleOutlined />
-          <span>{moment(task.deadline).format("DD/MM/YYYY")}</span>
+        <div className="task_deadline--container">
+          <span
+            className="task_deadline--content"
+            style={{ backgroundColor: bgColor }}
+          >
+            <ClockCircleOutlined />
+            <Text>{moment(task.deadline).format("DD/MM/YYYY - HH:mm")}</Text>
+          </span>
         </div>
       </div>
     </>
   );
 };
 
+const FilterItems: React.FC<FilterItemsProps> = ({
+  allTasks,
+  setTasksColumns,
+  className,
+}) => {
+  const queryParams = useAppSelector((state: any) => state.queryParams);
+  const { t } = useTranslation(["content", "base"]);
+  const dispatch = useDispatch();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const params = useParams();
+  const { responseData, isLoading } = useAxios(
+    "get",
+    `/project/members/all/${params.projectId}`,
+    []
+  );
+  const taskTypeOptions = [
+    {
+      label: `${t("content:task.type")}`,
+      options: [
+        { label: `${t("content:form.all")}`, value: `all` },
+        { label: `${t("content:form.issue")}`, value: `issue` },
+        { label: `${t("content:form.assignment")}`, value: `assignment` },
+      ],
+    },
+  ];
+  //Xử lý Filter theo loại công việc
+  const selectTaskTypes = (value: string) => {
+    dispatch(setQuery({ ...queryParams, type: value }));
+    setSearchParams({ ...queryParams, type: value });
+  };
+
+  //Filter công việc theo username của Member
+  const handleFilterMember = (values: any) => {
+    dispatch(setQuery({ ...queryParams, member: values }));
+    setSearchParams({ ...queryParams, member: values });
+  };
+
+  //Click cancel toàn bộ member đã chọn thì hiển thị lại toàn bộ danh sách tasks
+  const cancelSelect = () => {
+    initialData.map((data: any) => {
+      data.items = allTasks.filter((task: ITask) => {
+        return task.status === data.id;
+      });
+      return data;
+    });
+    setTasksColumns(initialData);
+  };
+
+  //Xử lý filter theo tên công việc
+  const handleInputChange = (event: any) => {
+    let value = event.target.value;
+    if (value === "" && searchParams.has("search")) {
+      let query = searchParams.get("search");
+      if (query) {
+        searchParams.delete("search");
+        const newParams: { [key: string]: string } = {};
+        searchParams.forEach((value: string, key: string) => {
+          newParams[key] = value;
+        });
+        setSearchParams(newParams);
+        dispatch(deleteQuery("search"));
+      }
+    } else {
+      dispatch(setQuery({ ...queryParams, search: value }));
+      setSearchParams({ ...queryParams, search: value });
+    }
+  };
+
+  return (
+    <div className={className}>
+      <Select
+        className="toolbar_filter_input"
+        size="large"
+        value={`${t("content:task.type")}: ${
+          queryParams.type
+            ? t<any>(`content:form.${queryParams.type}`)
+            : taskTypeOptions[0].options[0].label
+        }`}
+        options={taskTypeOptions}
+        dropdownMatchSelectWidth={false}
+        onChange={selectTaskTypes}
+      />
+      <Select
+        className="toolbar_filter_input"
+        allowClear
+        mode="multiple"
+        maxTagCount="responsive"
+        showSearch
+        size="large"
+        suffixIcon={<SearchOutlined />}
+        value={queryParams.member}
+        placeholder={`${t("content:member.member name")}`}
+        optionFilterProp="children"
+        filterOption={(input, option) =>
+          typeof option?.label === "string" &&
+          option.label.toLowerCase().includes(input.toLowerCase())
+        }
+        onChange={handleFilterMember}
+        onClear={cancelSelect}
+        dropdownRender={(menu) =>
+          isLoading ? (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                padding: "10px 0",
+              }}
+            >
+              <LoadingOutlined />
+            </div>
+          ) : (
+            menu
+          )
+        }
+        options={responseData?.members?.map((item: IUser) => ({
+          label: `${item.data.fullName}`,
+          value: item.data.username,
+        }))}
+      />
+      <Search
+        className="toolbar_filter_input"
+        size="large"
+        placeholder={`${t("content:task.task name")}`}
+        value={queryParams.search}
+        allowClear
+        onChange={handleInputChange}
+      />
+    </div>
+  );
+};
+
 const TasksPage = () => {
   const params = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { showMessage, contextHolder }: UseMessageApiReturnType =
-    useMessageApi();
   const queryParams = useSelector((state: any) => state.queryParams);
   const user = useAppSelector((state: RootState) => state.auth?.userInfo);
   const dispatch = useDispatch();
-  const { t, i18n } = useTranslation(["content", "base"]);
-
-  const [tasksColumns, setTasksColumns] = useState<ColumnData[]>([]);
-  const [dragLoading, setDragLoading] = useState<boolean>(false);
-  const [historyOrForm, setHistoryOrForm] = useState<boolean>(false);
+  const [sortSelectValue, setSortSelectValue] = useState<string>("");
+  const { showMessage, contextHolder }: UseMessageApiReturnType =
+    useMessageApi();
   const [taskCurrent, setTaskCurrent] = useState<any>(null);
+  const [allTasks, setAllTasks] = useState<ITask[]>([]);
+  const { t } = useTranslation(["content", "base"]);
+  const [tasksColumns, setTasksColumns] = useState<ColumnData[]>([]);
+  const [historyOrForm, setHistoryOrForm] = useState<boolean>(false);
   const [breadcrumb, setBreadcrumb] = useState({
     project: "",
     stages: "",
   });
+  const [activeTab, setActiveTab] = useState("info");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [statusForm, setStatusForm] = useState<boolean>(false);
   const [openInfo, setOpenInfo] = useState<boolean>(false);
+  const [fetchingTasks, setFetchingTasks] = useState<boolean>(false);
   const [countReloadTasks, setCountReloadTasks] = useState<number>(1);
   const [edit, setEdit] = useState<boolean>(false);
+  const [isUpload, setIsUpload] = useState<boolean>(false);
+  const [isDownload, setIsDownload] = useState<boolean>(false);
+  const [fileList, setFileList] = useState<any[]>([]);
+  const [openFilterDropdown, setFilterDropdown] = useState<boolean>(false);
 
+  //Gọi API Lấy danh sách tasks => set vào các column
+  //Lấy thông tin từ url để hiển thị tasks theo bộ lọc
   useEffect(() => {
     let query = Object.fromEntries([...searchParams]);
-    dispatch(setQuery(query));
-  }, []);
-  const taskTypeOptions = [
-    {
-      label: `Type`,
-      options: [
-        { label: `All`, value: `all` },
-        { label: `Issue`, value: `issue` },
-        { label: `Task`, value: `task` },
-      ],
-    },
-  ];
+    const queryMembers = searchParams.getAll("member");
+    dispatch(setQuery({ ...query, member: queryMembers }));
+    setFetchingTasks(true);
+    taskApi
+      .getAllTask(params.stagesId as string)
+      .then((res: any) => {
+        setAllTasks(res.tasks);
+        let newTasks = setupTasks(res.tasks, query, queryMembers);
+        let newState = initialData.map((data: any) => {
+          data.items = newTasks.filter((task: any) => {
+            return task.status === data.id;
+          });
+          return data;
+        });
+        setTasksColumns(newState);
+        setFetchingTasks(false);
+      })
+      .catch((err: any) => {
+        showMessage(
+          "error",
+          changeMsgLanguage(err.response?.data?.message, "Có lỗi xảy ra"),
+          2
+        );
+        setFetchingTasks(false);
+      });
+  }, [countReloadTasks]);
 
   const priorityOptions = [
     {
-      label: `Priority`,
+      label: `${t("content:form.priority")}`,
       options: [
-        { label: `Asc`, value: `asc` },
-        { label: `Desc`, value: `desc` },
+        { label: `${t("content:form.asc")}`, value: `prioAsc` },
+        { label: `${t("content:form.desc")}`, value: `prioDesc` },
+      ],
+    },
+    {
+      label: `${t("content:form.deadline")}`,
+      options: [
+        { label: `${t("content:form.asc")}`, value: `deadlineAsc` },
+        { label: `${t("content:form.desc")}`, value: `deadlineDesc` },
       ],
     },
   ];
@@ -167,7 +382,11 @@ const TasksPage = () => {
   const breadcrumItems = useMemo(
     () => [
       { title: <Link to="/">Home</Link> },
-      { title: <Link to={`/${params.projectId}`}>{breadcrumb?.project}</Link> },
+      {
+        title: (
+          <Link to={`/project/${params.projectId}`}>{breadcrumb?.project}</Link>
+        ),
+      },
       {
         title: breadcrumb.stages,
       },
@@ -175,6 +394,7 @@ const TasksPage = () => {
     [breadcrumb]
   );
 
+  //Lấy breadcrumb
   useEffect(() => {
     (async () => {
       try {
@@ -195,70 +415,27 @@ const TasksPage = () => {
     })();
   }, []);
 
-  const initialData = [
-    {
-      id: "open",
-      title: "Open",
-      items: [],
-      dropAllow: true,
-    },
-    {
-      id: "inprogress",
-      title: "In Progress",
-      items: [],
-      dropAllow: true,
-    },
-    {
-      id: "review",
-      title: "In Review",
-      items: [],
-      dropAllow: true,
-    },
-    {
-      id: "reopen",
-      title: "Re-Open",
-      items: [],
-      dropAllow: true,
-    },
-    {
-      id: "done",
-      title: "Done",
-      items: [],
-      dropAllow: true,
-    },
-    {
-      id: "cancel",
-      title: "Cancel",
-      items: [],
-      dropAllow: true,
-    },
-  ];
-
+  //Filter và sort các tasks theo thao tác người dùng
   useEffect(() => {
-    taskApi
-      .getAllTask(params.stagesId as string)
-      .then((res: any) => {
-        initialData.map((data: any) => {
-          data.items = res.tasks.filter((task: any) => {
-            return task.status === data.id;
-          });
-        });
-        setTasksColumns(initialData);
-      })
-      .catch((err: any) => {
-        console.error(err);
+    const { member } = queryParams;
+    let filteredTasks = setupTasks(allTasks, queryParams, member);
+    let newState = initialData.map((data: any) => {
+      data.items = filteredTasks.filter((task: any) => {
+        return task.status === data.id;
       });
-  }, [countReloadTasks]);
+      return data;
+    });
+    setTasksColumns(newState);
+  }, [queryParams]);
 
-  const selectTaskTypes = (value: string) => {
-    dispatch(setQuery({ ...queryParams, type: value }));
-    setSearchParams({ ...queryParams, type: value });
-  };
-
+  //Xử lý sort theo thứ tự công việc và deadline
   const sortPriority = (value: string) => {
-    dispatch(setQuery({ ...queryParams, priority: value }));
-    setSearchParams({ ...queryParams, priority: value });
+    setSortSelectValue(value);
+    dispatch(setQuery({ ...queryParams, sort: value }));
+    setSearchParams({ ...queryParams, sort: value });
   };
+
+  //Thay đổi trạng thái các column khi bắt đầu drag
 
   const handleDragStart = (result: any) => {
     const startCol = tasksColumns.filter(
@@ -319,6 +496,7 @@ const TasksPage = () => {
     setTasksColumns(newState);
   };
 
+  //Cập nhật giao diện khi thả item
   const handleDragEnd = (result: any) => {
     const { destination, source } = result;
 
@@ -373,34 +551,57 @@ const TasksPage = () => {
       const newSourceTasks = Array.from(sourceCol.items);
       const [removedItem] = newSourceTasks.splice(source.index, 1);
       removedItem.status = destination.droppableId;
+      const newSourceCol = { ...sourceCol, items: newSourceTasks };
+      const newDesTasks = Array.from(desCol.items);
+      newDesTasks.splice(destination.index, 0, removedItem);
+      const newDesCol = { ...desCol, items: newDesTasks };
+      const newState = tasksColumns.map((column) => {
+        if (column.id === newSourceCol.id) {
+          return { ...newSourceCol, dropAllow: true };
+        } else if (column.id === newDesCol.id) {
+          return { ...newDesCol, dropAllow: true };
+        } else {
+          return { ...column, dropAllow: true };
+        }
+      });
+      setTasksColumns(newState);
       taskApi
         .editTask(removedItem._id, { ...removedItem, stageId: params.stagesId })
         .then((res: any) => {
-          const sourceTasks = Array.from(sourceCol.items);
-          const newSourceTasksTest = sourceTasks.filter((task: any) => {
-            return task._id !== res.task._id;
-          });
-          const newSourceColTest = { ...sourceCol, items: newSourceTasksTest };
-          const newDesTasksTest = Array.from(desCol.items);
-          newDesTasksTest.splice(destination.index, 0, res.task);
-          const newDesColTest = { ...desCol, items: newDesTasksTest };
+          showMessage(
+            "success",
+            changeMsgLanguage(res?.message, "Cập nhật công việc thành công"),
+            2
+          );
+        })
+        .catch((err: any) => {
+          removedItem.status = source.droppableId;
+          newDesTasks.splice(destination.index, 1);
+          const newDesCol = { ...desCol, items: newDesTasks };
+          newSourceTasks.splice(source.index, 0, removedItem);
+          const newSourceCol = { ...sourceCol, items: newSourceTasks };
           const newState = tasksColumns.map((column) => {
-            if (column.id === newSourceColTest.id) {
-              return { ...newSourceColTest, dropAllow: true };
-            } else if (column.id === newDesColTest.id) {
-              return { ...newDesColTest, dropAllow: true };
+            if (column.id === newSourceCol.id) {
+              return { ...newSourceCol, dropAllow: true };
+            } else if (column.id === newDesCol.id) {
+              return { ...newDesCol, dropAllow: true };
             } else {
               return { ...column, dropAllow: true };
             }
           });
           setTasksColumns(newState);
-          showMessage("success", res?.message, 2);
-        })
-        .catch((err: any) => {
-          showMessage("error", err.response.data?.message, 2);
+          showMessage(
+            "error",
+            changeMsgLanguage(
+              err.response.data?.message,
+              "Cập nhật công việc thất bại"
+            ),
+            2
+          );
         });
     }
   };
+
   // tạo task
   const handleCreateTask = () => {
     setIsModalOpen(true);
@@ -421,6 +622,7 @@ const TasksPage = () => {
     setEdit(false);
     setOpenInfo(false);
     setTaskCurrent(null);
+    setHistoryOrForm(false);
   };
 
   // mở tab thông tin task
@@ -432,6 +634,7 @@ const TasksPage = () => {
 
   // cuộn xuống phần tử khi nháy vào( sẽ cố gắng để thay đổi khi cuộn trang luôn)
   const handleTabLick = (tabLabel: string) => {
+    setActiveTab(tabLabel);
     if (tabLabel === "info") {
       setHistoryOrForm(false);
       const element = document.getElementById("form_task");
@@ -456,6 +659,7 @@ const TasksPage = () => {
       setHistoryOrForm(true);
     }
   };
+
   // phần tùy chọn modal task
   const items: TabsProps["items"] = [
     {
@@ -475,6 +679,81 @@ const TasksPage = () => {
     },
   ];
 
+  //Xử lý download file danh sách tasks
+  const handleDownload = async () => {
+    setIsDownload(true);
+    try {
+      const response = await axios({
+        method: "get",
+        url: `${process.env.REACT_APP_BACKEND_URL}/stage/tasks/${params.stagesId}/export`,
+        headers: { Authorization: `Bearer ${user.token}` },
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "tasks.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      setIsDownload(false);
+    } catch (err: any) {
+      showMessage(
+        "error",
+        changeMsgLanguage(err.response.data?.message, "Có lỗi xảy ra"),
+        2
+      );
+      setIsDownload(false);
+    }
+  };
+
+  //Xử lý upload file danh sách tasks
+  const handleUpload = (info: any) => {
+    let newFileList = [...info.fileList];
+    newFileList = newFileList.slice(-1);
+    setFileList(newFileList);
+    if (info.file.status === "uploading") {
+      setIsUpload(true);
+    }
+    if (info.file.status !== "uploading") {
+      if (info.file.status === "done") {
+        let newState = tasksColumns.map((column: any) => {
+          column.items = info.file.response.tasks.filter((task: any) => {
+            return task.status === column.id;
+          });
+          return column;
+        });
+        setAllTasks(info.file.response.tasks);
+        setTasksColumns(newState);
+        showMessage(
+          "success",
+          changeMsgLanguage(info.file.response.message, "Upload thành công"),
+          2
+        );
+        setIsUpload(false);
+      } else if (info.file.status === "error") {
+        showMessage(
+          "error",
+          changeMsgLanguage(info.file.response.message, "Xảy ra lỗi khi upload")
+        );
+        setIsUpload(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab) {
+      if (activeTab === "activity") {
+        setHistoryOrForm(true);
+      }
+    }
+  }, [activeTab, taskCurrent]);
+
+  const handleFilterDropdown = (flag: boolean) => {
+    setFilterDropdown(flag);
+  };
+
   return (
     <div className="tasks_page">
       {contextHolder}
@@ -488,9 +767,14 @@ const TasksPage = () => {
         maskClosable={false}
         style={{ top: "50px" }}
         footer={[]}
+        className="task__modal__responsive"
       >
         {!statusForm && !openInfo && (
           <TaskForm
+            allTasks={allTasks}
+            setAllTasks={setAllTasks}
+            setTasksColumns={setTasksColumns}
+            tasksColumns={tasksColumns}
             setCountReloadTasks={setCountReloadTasks}
             edit={edit}
             handleEditTask={handleEditTask}
@@ -512,6 +796,7 @@ const TasksPage = () => {
           <div className="task__info--container">
             <Tabs
               defaultActiveKey="1"
+              activeKey={activeTab}
               items={items}
               onTabClick={handleTabLick}
             />
@@ -523,6 +808,10 @@ const TasksPage = () => {
               <>
                 {statusForm && edit ? (
                   <TaskForm
+                    allTasks={allTasks}
+                    setAllTasks={setAllTasks}
+                    setTasksColumns={setTasksColumns}
+                    tasksColumns={tasksColumns}
                     setCountReloadTasks={setCountReloadTasks}
                     edit={edit}
                     handleEditTask={handleEditTask}
@@ -542,6 +831,10 @@ const TasksPage = () => {
                   />
                 ) : (
                   <TaskForm
+                    allTasks={allTasks}
+                    setAllTasks={setAllTasks}
+                    setTasksColumns={setTasksColumns}
+                    tasksColumns={tasksColumns}
                     setCountReloadTasks={setCountReloadTasks}
                     handleEditTask={handleEditTask}
                     edit={edit}
@@ -565,97 +858,167 @@ const TasksPage = () => {
           </div>
         )}
       </Modal>
+
+      {/* Nội dung chính của page */}
       <Space direction="vertical" size="large">
         <Breadcrumb items={breadcrumItems} />
-        <div className="tool_bar">
-          <Button size="large" type="primary" onClick={handleCreateTask}>
-            {t("content:form.create task")}
-          </Button>
-
-          <Select
-            size="large"
-            value={`Type: ${
-              _.capitalize(queryParams.type) ||
-              taskTypeOptions[0].options[0].label
-            }`}
-            options={taskTypeOptions}
-            dropdownMatchSelectWidth={false}
-            onChange={selectTaskTypes}
-          />
-          <Select
-            size="large"
-            value={`Priority: ${
-              _.capitalize(queryParams.priority) ||
-              priorityOptions[0].options[0].label
-            }`}
-            dropdownMatchSelectWidth={false}
-            options={priorityOptions}
-            onChange={sortPriority}
-          />
-          <Select size="large" defaultValue="Filter Member" />
-          <Search size="large" placeholder="Task Name" />
-        </div>
+        <Row
+          className="tool_bar"
+          justify="space-between"
+          align="middle"
+          gutter={[16, 16]}
+        >
+          <Col span={24} sm={12} className="tool_bar_left">
+            <Button size="large" type="primary" onClick={handleCreateTask}>
+              {t("content:form.create task")}
+            </Button>
+            <div className="file_button">
+              <Tooltip title={t("content:task.export")}>
+                <Button
+                  loading={isDownload}
+                  size="large"
+                  icon={<DownloadOutlined />}
+                  onClick={handleDownload}
+                />
+              </Tooltip>
+              <Tooltip title={t("content:task.import")}>
+                <Upload
+                  name="tasks"
+                  accept=".xlsx, .xls, .csv"
+                  showUploadList={false}
+                  onChange={handleUpload}
+                  action={`${process.env.REACT_APP_BACKEND_URL}/stage/tasks/${params.stagesId}/import`}
+                  headers={{ Authorization: `Bearer ${user.token}` }}
+                  fileList={fileList}
+                >
+                  <Button
+                    loading={isUpload}
+                    size="large"
+                    icon={<UploadOutlined />}
+                  />
+                </Upload>
+              </Tooltip>
+            </div>
+          </Col>
+          <Col span={24} sm={12} className="tool_bar_right">
+            <Select
+              size="large"
+              value={
+                sortSelectValue?.includes("prio") ||
+                queryParams.sort?.includes("prio")
+                  ? `${t("content:form.priority")}: ${t<any>(
+                      `content:form.${queryParams.sort
+                        ?.replace("prio", "")
+                        .toLowerCase()}`
+                    )}`
+                  : sortSelectValue?.includes("deadline") ||
+                    queryParams.sort?.includes("deadline")
+                  ? `${t("content:form.deadline")}: ${t<any>(
+                      `content:form.${queryParams.sort
+                        ?.replace("deadline", "")
+                        .toLowerCase()}`
+                    )}`
+                  : `${t("content:form.deadline")}: ${
+                      priorityOptions[1].options[0].label
+                    }`
+              }
+              dropdownMatchSelectWidth={false}
+              options={priorityOptions}
+              onChange={sortPriority}
+            />
+            <Dropdown
+              className="dropdown_filter_btn"
+              trigger={["click"]}
+              open={openFilterDropdown}
+              onOpenChange={handleFilterDropdown}
+              dropdownRender={(menu: ReactNode) => {
+                return (
+                  <>
+                    <FilterItems
+                      allTasks={allTasks}
+                      setTasksColumns={setTasksColumns}
+                      className="filter_dropdown"
+                    />
+                  </>
+                );
+              }}
+            >
+              <Button icon={<FilterOutlined />} size="large" />
+            </Dropdown>
+            <FilterItems
+              allTasks={allTasks}
+              setTasksColumns={setTasksColumns}
+              className="toolbar_filter"
+            />
+          </Col>
+        </Row>
         <Divider />
         <div className="tasks_board">
-          <DragDropContext
-            onDragEnd={handleDragEnd}
-            onDragStart={handleDragStart}
-          >
-            {tasksColumns?.map((column: any, index: number) => {
-              return (
-                <Droppable
-                  droppableId={column.id}
-                  key={column.id}
-                  isDropDisabled={!column.dropAllow}
-                >
-                  {(provided, snapshot) => {
-                    return (
-                      <div
-                        ref={provided.innerRef}
-                        {...provided.droppableProps}
-                        className="column_container"
-                        style={{
-                          cursor: column.dropAllow ? "" : "not-allowed",
-                        }}
-                      >
-                        <Title level={4} className="column_containter_title">
-                          {column.title}
-                        </Title>
-                        <div className="task_container">
-                          {column.items?.map((task: any, index: number) => {
-                            return (
-                              <Draggable
-                                key={task._id}
-                                draggableId={task._id}
-                                index={index}
-                              >
-                                {(provided, snapshot) => {
-                                  return (
-                                    <div
-                                      className="task_item"
-                                      ref={provided.innerRef}
-                                      {...provided.dragHandleProps}
-                                      {...provided.draggableProps}
-                                    >
-                                      <TaskItem
-                                        task={task}
-                                        handleOpenInfoTask={handleOpenInfoTask}
-                                      />
-                                    </div>
-                                  );
-                                }}
-                              </Draggable>
-                            );
-                          })}
-                          {provided.placeholder}
+          {fetchingTasks ? (
+            <Skeleton active />
+          ) : (
+            <DragDropContext
+              onDragEnd={handleDragEnd}
+              onDragStart={handleDragStart}
+            >
+              {tasksColumns?.map((column: any, index: number) => {
+                return (
+                  <Droppable
+                    droppableId={column.id}
+                    key={column.id}
+                    isDropDisabled={!column.dropAllow}
+                  >
+                    {(provided, snapshot) => {
+                      return (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className="column_container"
+                          style={{
+                            cursor: column.dropAllow ? "" : "not-allowed",
+                          }}
+                        >
+                          <Title level={4} className="column_containter_title">
+                            {column.title}
+                          </Title>
+                          <div className="task_container">
+                            {column.items?.map((task: any, index: number) => {
+                              return (
+                                <Draggable
+                                  key={task._id}
+                                  draggableId={task._id}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => {
+                                    return (
+                                      <div
+                                        className="task_item"
+                                        ref={provided.innerRef}
+                                        {...provided.dragHandleProps}
+                                        {...provided.draggableProps}
+                                      >
+                                        <TaskItem
+                                          task={task}
+                                          handleOpenInfoTask={
+                                            handleOpenInfoTask
+                                          }
+                                        />
+                                      </div>
+                                    );
+                                  }}
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
+                          </div>
                         </div>
-                      </div>
-                    );
-                  }}
-                </Droppable>
-              );
-            })}
-          </DragDropContext>
+                      );
+                    }}
+                  </Droppable>
+                );
+              })}
+            </DragDropContext>
+          )}
         </div>
       </Space>
     </div>

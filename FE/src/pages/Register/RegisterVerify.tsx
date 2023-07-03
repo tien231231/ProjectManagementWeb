@@ -1,8 +1,9 @@
 import React from "react";
 import { images } from "../../assets/images";
 import { Typography } from "antd";
+import { Link } from "react-router-dom";
 
-const { Title, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 const RegisterVerify: React.FC = () => {
   return (
@@ -10,7 +11,9 @@ const RegisterVerify: React.FC = () => {
       <img src={images.registerBackground} alt="register-background" />
       <div className="content">
         <Title level={1}>Register Success</Title>
-        <Paragraph>Please check your email for verification</Paragraph>
+        <Text className="content_text">
+          Back to <Link to="/">login</Link> page
+        </Text>
       </div>
     </div>
   );

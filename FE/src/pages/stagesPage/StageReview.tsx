@@ -1,21 +1,13 @@
-import Comment from '../../components/comment/Comment';
-import { useAxios } from '../../hooks';
-import useIsBoss from '../../hooks/useIsBoss';
-import { useAppSelector } from '../../redux/hook';
-import { RootState } from '../../redux/store';
-import projectApi from '../../services/api/projectApi';
-import stageApi from '../../services/api/stageApi';
-import { MemberDataType } from '../Members/MemberList';
-import {
-  Button,
-  Input,
-  Modal,
-  Skeleton
-  } from 'antd';
-import { useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router';
-import { v4 as uuid } from 'uuid';
+import Comment from "../../components/comment/Comment";
+import { useAxios } from "../../hooks";
+import useIsBoss from "../../hooks/useIsBoss";
+import stageApi from "../../services/api/stageApi";
+import { changeMsgLanguage } from "../../utils/changeMsgLanguage";
+import { MemberDataType } from "../Members/MemberList";
+import { Button, Input, Modal, Skeleton } from "antd";
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { v4 as uuid } from "uuid";
 
 import useMessageApi, {
   UseMessageApiReturnType,
@@ -53,7 +45,7 @@ const StageReview = ({ stageId }: IPropsReview) => {
   const [myReview, setMyReview] = useState<string>("");
   const [open, setOpen] = useState(false);
   const [reviewAdded, setReviewAdded] = useState<number>(1);
-  // const [isBoss, setIsBoss] = useState(false);
+
   const [listComment, setListComment] = useState<any>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
   const [loading, setLoading] = useState(false);
@@ -87,13 +79,24 @@ const StageReview = ({ stageId }: IPropsReview) => {
       stageApi
         .addComment(stageId, myReview)
         .then((res: any) => {
-          showMessage("success", res.message, 2);
+          showMessage(
+            "success",
+            changeMsgLanguage(res?.message, "Bình luận thành công"),
+            2
+          );
           setReviewAdded((prev) => prev + 1);
           setOpen(false);
           setMyReview("");
         })
         .catch((err) => {
-          showMessage("error", err.response.data?.message, 2);
+          showMessage(
+            "error",
+            changeMsgLanguage(
+              err.response?.data?.message,
+              "Bình luận thất bại"
+            ),
+            2
+          );
         });
     }
   };
@@ -111,36 +114,6 @@ const StageReview = ({ stageId }: IPropsReview) => {
     });
   };
 
-  // Lấy List member thuộc project
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const response: any = await projectApi.getAllMember(
-  //         params.projectId as string
-  //       );
-  //       response?.members?.forEach(
-  //         (userP: {
-  //           data: MemberDataType;
-  //           joiningDate: Date;
-  //           role: string;
-  //         }) => {
-  //           if (
-  //             userP.role === "manager" ||
-  //             userP.role === "leader" ||
-  //             userP.role === "supervisor"
-  //           ) {
-  //             if (userP.data.username === user.username) {
-  //               setIsBoss(true);
-  //               return;
-  //             }
-  //           }
-  //         }
-  //       );
-  //     } catch (err) {
-  //       console.error(err);
-  //     }
-  //   })();
-  // }, []);
   const showModal = () => {
     setOpen(true);
   };
@@ -168,6 +141,7 @@ const StageReview = ({ stageId }: IPropsReview) => {
           cancelText={t("base:cancel")}
         >
           <TextArea
+            autoFocus
             value={myReview}
             onChange={(e) => setMyReview(e.target.value)}
             onKeyDown={(event) => {
@@ -175,7 +149,9 @@ const StageReview = ({ stageId }: IPropsReview) => {
                 event.preventDefault();
               }
             }}
-            rows={4}
+            // rows={4}
+            maxLength={500}
+            autoSize={{ minRows: 4, maxRows: 8 }}
           />
         </Modal>
       </div>

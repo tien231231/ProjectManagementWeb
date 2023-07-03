@@ -3,14 +3,12 @@ import { IProject } from "../../components/sidebar/Sidebar";
 import Loading from "../../components/support/Loading";
 import { useAppSelector } from "../../redux/hook";
 import { RootState } from "../../redux/store";
-import projectApi from "../../services/api/projectApi";
-import { DeleteFilled, EditFilled, SearchOutlined } from "@ant-design/icons";
+import { DeleteFilled, EditFilled } from "@ant-design/icons";
 import axios from "axios";
 import moment from "moment";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import slugify from "slugify";
 import {
   getAllProjectError,
   getAllProjectStart,
@@ -18,7 +16,6 @@ import {
 } from "../../redux/slice/projectSlice";
 
 import {
-  Link,
   useSearchParams,
   useNavigate,
   createSearchParams,
@@ -29,16 +26,19 @@ import {
   Select,
   Space,
   Table,
-  Tag,
   Modal,
-  message,
   Popconfirm,
   Typography,
+  Skeleton,
 } from "antd";
-import type { InputRef } from "antd";
-import type { ColumnsType, TableProps, ColumnType } from "antd/es/table";
+
+import type { ColumnsType, TableProps } from "antd/es/table";
 import type { SizeType } from "antd/es/config-provider/SizeContext";
-import type { FilterConfirmProps } from "antd/es/table/interface";
+
+import { deleteQuery, setQuery } from "../../redux/slice/paramsSlice";
+import useMessageApi, {
+  UseMessageApiReturnType,
+} from "../../components/support/Message";
 
 // import { TablePaginationPosition } from 'antd/lib/table';
 export interface DataType {
@@ -55,28 +55,32 @@ const { Text } = Typography;
 
 const ListProject: React.FC = () => {
   const navigate = useNavigate();
+  const timeOutRef = useRef<any>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   const listProject = useSelector((state: any) => state.project?.listProject);
-  const initialQuery = useSelector((state: any) => state.queryParams);
+  const queryParams = useSelector((state: any) => state.queryParams);
   const loading = useSelector((state: any) => state.project?.isFetching);
   const [size, setSize] = useState<SizeType>("large");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchResult, setSearchResult] = useState<any[]>([]);
+  const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const [openCreateProject, setOpenCreateProject] = useState<boolean>(false);
   const [projectDetail, setProjectDetail] = useState<any>();
   const [openEditProject, setOpenEditProject] = useState<boolean>(false);
-  const [searchInput, setSearchInput] = useState<string>("");
   const token = useAppSelector((state: RootState) => state.auth.userInfo.token);
+  const { showMessage, contextHolder }: UseMessageApiReturnType =
+    useMessageApi();
   const dispatch = useDispatch();
   // useEffect(() => {
   //   projectApi.getAll().then((res) => console.log(res));
   // }, []);
 
-  const confirm = (stages: DataType) => {
-    console.log(stages);
-    message.success("Click on Yes");
-    message.error("Click on No");
-  };
+  useEffect(() => {
+    let query = Object.fromEntries([...searchParams]);
+    dispatch(setQuery({ ...query }));
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -102,7 +106,6 @@ const ListProject: React.FC = () => {
         return indexValue === index;
       }
     );
-
     setProjectDetail(projectDetail[0]);
     setOpenEditProject(true);
   };
@@ -111,9 +114,53 @@ const ListProject: React.FC = () => {
     console.log(project);
   };
 
-  const handleSearchMember = (value: string) => {
-    setSearchInput("");
-    console.log(value);
+  //Search Project theo tên
+  useEffect(() => {
+    const searchProject = async () => {
+      if (queryParams.search) {
+        setLoadingSearch(true);
+        try {
+          const response = await axios({
+            method: "get",
+            url: `${process.env.REACT_APP_BACKEND_URL}/project/search`,
+            params: {
+              name: queryParams.search,
+            },
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setSearchResult(response.data.projects);
+          setLoadingSearch(false);
+        } catch (err: any) {
+          showMessage("error", err.response.data?.message, 2);
+          setLoadingSearch(false);
+        }
+      }
+    };
+    timeOutRef.current = setTimeout(searchProject, 500);
+    return () => {
+      clearTimeout(timeOutRef.current);
+    };
+  }, [queryParams.search]);
+
+  //Set search input lên query
+  const handleInputChange = (event: any) => {
+    let value = event.target.value;
+    if (value === "" && searchParams.has("search")) {
+      let query = searchParams.get("search");
+      if (query) {
+        searchParams.delete("search");
+        const newParams: { [key: string]: string } = {};
+        searchParams.forEach((value: string, key: string) => {
+          newParams[key] = value;
+        });
+        setSearchResult([]);
+        setSearchParams(newParams);
+        dispatch(deleteQuery("search"));
+      }
+    } else {
+      dispatch(setQuery({ ...queryParams, search: value }));
+      setSearchParams({ ...queryParams, search: value });
+    }
   };
 
   const navigateProject = (record: any) => {
@@ -135,7 +182,7 @@ const ListProject: React.FC = () => {
           return (
             <>
               <Text
-                className="project-name"
+                className="project_name"
                 onClick={() => navigateProject(record)}
               >
                 {record.name}
@@ -226,9 +273,7 @@ const ListProject: React.FC = () => {
               placement="topRight"
               title="Delete the project"
               description="Are you sure to delete this project?"
-              onConfirm={() => confirm(record)}
-              okText="Yes"
-              cancelText="No"
+              onConfirm={() => handleDeleteProject(record)}
             >
               <DeleteFilled style={{ fontSize: "16px", cursor: "pointer" }} />
             </Popconfirm>
@@ -241,7 +286,30 @@ const ListProject: React.FC = () => {
 
   const data: DataType[] = useMemo(() => {
     let newProject =
-      listProject.projects && listProject.projects.length > 0
+      searchResult && searchResult.length > 0
+        ? [
+            ...searchResult
+              .filter((project: IProject) => {
+                if (statusFilter === "all") {
+                  return true;
+                } else {
+                  return project.status === statusFilter;
+                }
+              })
+              .map((project: IProject, index: number) => {
+                return {
+                  key: project._id,
+                  name: project.name,
+                  code: project.code,
+                  status: project.status,
+                  startDate: moment(project.startDate).format("DD/MM/YYYY "),
+                  endDate: moment(project.estimatedEndDate).format(
+                    "DD/MM/YYYY "
+                  ),
+                };
+              }),
+          ]
+        : listProject.projects && listProject.projects.length > 0
         ? [
             ...listProject.projects
               .filter((project: IProject) => {
@@ -266,7 +334,8 @@ const ListProject: React.FC = () => {
           ]
         : [];
     return newProject;
-  }, [listProject, statusFilter]);
+  }, [listProject, statusFilter, searchResult]);
+
   const pagination: TableProps<any>["pagination"] = {
     position: ["bottomCenter"],
   };
@@ -275,6 +344,8 @@ const ListProject: React.FC = () => {
   };
   return (
     <div className="content_project-page">
+      {contextHolder}
+      {loading && <Loading />}
       {/* {loading && <Loading />} */}
       <div className="project_page-header">
         {/* Create New Project Modal */}
@@ -318,10 +389,11 @@ const ListProject: React.FC = () => {
         <div className="header_right">
           <Space wrap>
             <Search
-              value={searchInput}
+              loading={loadingSearch}
+              value={queryParams.search}
               allowClear
-              onChange={(event: any) => setSearchInput(event?.target.value)}
-              onSearch={handleSearchMember}
+              onChange={handleInputChange}
+              // onSearch={handleSearchMember}
               placeholder="Enter name or code..."
               size="large"
               style={{ width: "300px" }}
@@ -345,7 +417,11 @@ const ListProject: React.FC = () => {
         </div>
       </div>
       <div className="project_page-table">
-        <Table columns={columns} dataSource={data} pagination={pagination} />
+        {loadingSearch ? (
+          <Skeleton active />
+        ) : (
+          <Table columns={columns} dataSource={data} pagination={pagination} />
+        )}
       </div>
     </div>
   );

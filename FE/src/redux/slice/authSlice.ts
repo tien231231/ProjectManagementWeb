@@ -29,9 +29,7 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     setLogout: (state, action) => {
-      for (let key in state.userInfo) {
-        delete state.userInfo[key];
-      }
+      state.userInfo = {};
     },
     updateUserInfo: (state, action) => {
       state.userInfo = { ...state.userInfo, ...action.payload };

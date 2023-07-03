@@ -1,5 +1,6 @@
 {
   "ok": "Ok",
+  "empty": "Empty",
   "cancel": "Cancel",
   "loading": "Loading",
   "edit": "Edit",
@@ -7,9 +8,21 @@
   "create": "Create",
   "done": "Done",
   "update": "Update",
+  "send": "Send",
   "generalInformation": "General Information",
   "stages": "Stages",
+  "task": "Task",
+  "project": "Project",
   "members": "Members",
   "home": "Home",
-  "loadMore": "Load More"
+  "loadMore": "Load More",
+  "detail": "Details",
+  "before": "Before",
+  "after": "After",
+  "success": "Success",
+  "error": "Error",
+  "logout": "Logout",
+  "backHome": "Back Home",
+  "notFound": "Not Found",
+  "userInfo": "Account information"
 }

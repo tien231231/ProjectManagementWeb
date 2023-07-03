@@ -1,8 +1,10 @@
-import anime from 'animejs/lib/anime.es.js';
-import React, { useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import anime from "animejs/lib/anime.es.js";
+import React, { useEffect } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 function NotFoundPage() {
+  const params = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     anime({
       targets: ".row svg",
@@ -12,7 +14,6 @@ function NotFoundPage() {
       easing: "easeInOutSine",
       direction: "alternate",
     });
-
     anime({
       targets: "#zero",
       translateX: 10,
@@ -23,6 +24,16 @@ function NotFoundPage() {
       scale: [{ value: 1 }, { value: 1.4 }, { value: 1, delay: 250 }],
       rotateY: { value: "+=180", delay: 200 },
     });
+  }, []);
+
+  useEffect(() => {
+    const root = "*";
+    if (
+      params[root] &&
+      (params[root] === "register" || params[root] === "register-verify")
+    ) {
+      navigate("/");
+    }
   }, []);
 
   return (
