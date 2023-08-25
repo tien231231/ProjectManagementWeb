@@ -29,11 +29,7 @@
     2.2.	User's role in the project
 
     In each project, the user has a unique role.
-    There are 4 roles in 1 project:
-    -Project owner (Project creator), maximum 1 person/project
-    -Project management, up to 3 people/project
-    -Member
-    -Supervisor
+    There are 4 roles in 1 project:Project owner (Project creator), maximum 1 person/project;Project management, up to 3 people/project;Member;Supervisor.
 
     2.2.	Work status transition diagram                 
     ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7236caa4-8477-4b78-8571-9819853eb7b5)
@@ -58,4 +54,4 @@
     ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/40e4b20c-1a51-490f-a679-70f82ee119b5)
 
    
-![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7c2b13cb-7ced-4d4d-b0d0-d9f9d5f6b34d)
+    ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7c2b13cb-7ced-4d4d-b0d0-d9f9d5f6b34d)
