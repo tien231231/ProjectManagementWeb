@@ -1,117 +1,52 @@
 
 
-========================QUẢN LÝ CÔNG VIỆC DỰ ÁN==========================
+========================PROJECT MANAGEMENT==========================
 
 
-![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/92dbf40a-be2f-4c38-aecd-526059b7c707)
-1. Mô tả
-Ứng dụng web quản lý công việc dự án được tạo ra nhằm giúp cho đội dự án phần mềm có thể dễ dàng và thuận tiên trong việc quản lý, phân công công việc và giao tiếp giữa các thành viên trong đội dự án.
-Phạm vi sử dụng: trong 1 công ty công nghệ.
-Đối tượng sử dụng: các CBNV của công ty công nghệ đó.
-2. Yêu cầu chức năng
-2.1.	Sơ đồ luồng công việc
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/3ba3ecdd-bd90-4499-b56a-337922a50b99)
+
+1. Describe
+1.1. Reality
+A project management website is an online system developed to support the efficient management, tracking, and operation of projects. It provides an interactive and collaborative platform for project members, enhancing organization, information management, and project progress. It serves as a centralized hub where team members can coordinate tasks, communicate, and monitor project developments, thereby facilitating streamlined project management and effective collaboration.
+1.2. System Description
+The website system provides a user environment primarily tailored for members within a technology company. This system will be developed as a web application, allowing users to access it from any internet-connected device.
+
+The system will encompass the following main functionalities:
+    1. Account Registration: Users will be required to register an account on the system to access its software functions.
+    2. Project Management: Users can search, create, view, edit, and delete projects.
+    3. Phase Management within Projects: Users can search, create, view, edit, and delete phases within projects.
+    4. Task Management: Users can search, create, view, edit, and delete tasks within projects.
+    5. Collaboration within Project Tasks: The system will enable users to collaborate on tasks among project members.
+    6. Notifications: The system will automatically notify users about task changes through email.
+
+2. Require function
+2.1.	Workflow Diagram
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/4ab365ae-f70d-4f71-80d4-101ecdfa673a)
 
-2.2.	Vai trò của người dùng trong dự án
-Trong mỗi dự án, người dùng có 1 vai trò duy nhất.
-Có 4 vai trò trong 1 dự án:
--	Chủ dự án (Người tạo dự án), tối đa 1 người/dự án
--	Quản lý dự án, tối đa 3 người/dự án
--	Thành viên thường
--	Người giám sát dự án
+2.2.	User's role in the project
+In each project, the user has a unique role.
+There are 4 roles in 1 project:
+    - Project owner (Project creator), maximum 1 person/project
+    - Project management, up to 3 people/project
+    - Member
+    - Supervisor
 
-2.3.	Sơ đồ chuyển đổi trạng công việc
+2.3.	Work status transition diagram
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7236caa4-8477-4b78-8571-9819853eb7b5)
   
--	Open: Đang chờ được thực hiện
--	In Progress: Đang thực hiện
--	In Review: Đang chờ xem xét
--	Done: Đã hoàn thành
--	Re-Open: Thực hiện lại
--	Cancel: Hủy bỏ
 
 2.4.	Use cases
-![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/8c012404-2446-4568-9dfd-e2c419ddfd2d)
-2.5.	Chi tiết
-2.5.1.	Đăng ký tài khoản
--	Mô tả:
-o	Người dùng đăng ký 1 tài khoản trên hệ thống và thực hiện xác nhận tài khoản qua email.
-o	Người dùng nhập thông tin họ và tên, email, tên tài khoản, mật khẩu. 
-o	Sau khi đăng ký, người dùng thực hiện cập nhật các thông tin cá nhân khác.
-o	Người dùng có thể đăng ký tài khoản bằng Google Account.
--	Dữ liệu: 
-o	Người dùng bao gồm các thông tin: họ và tên, giới tính, ngày sinh, mô tả bản thân, ảnh đại diện, email, số điện thoại, tên đăng nhập, mật khẩu.
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/e5daefea-38ee-423b-9b3e-d939c6ac6922)
 
-2.5.2.	Quản lý dự án
--	Mô tả:
-o	Người dùng xem danh sách dự án đang tham gia.
-o	Người dùng có thể tạo mới 1 dự án.
-o	Người dùng có thể cập nhật thông tin dự án nếu là chủ dự án hoặc quản lý dự án.
--	Dữ liệu:
-o	Một dự án bao gồm các thông tin: mã dự án, tên dự án, ngày bắt đầu, ngày kết thúc dự kiến, mô tả dự án, trạng thái dự án.
-o	Dự án có 4 trạng thái: 
-	Chuẩn bị (chưa đến ngày bắt đầu dự án)
-	Đang thực hiện
-	Tạm đình chỉ (Dự án bị đình chỉ) 
-	Hoàn thành (Với điều kiện không còn công việc nào có trạng thái khác Done hoặc Cancel)
--	Phân quyền:
-o	Chủ dự án có thể cập nhật tất cả thông tin dự án.
-o	Quản lý dự án có thể cập nhật trạng thái dự án.
-2.5.3.	Quản lý thành viên của dự án
--	Mô tả:
-o	Các thành viên có thể xem danh sách/chi tiết thành viên trong dự án.
-o	Chủ dự án hoặc quản lý dự án có thể thêm, bớt, cập nhật vai trò thành viên trong dự án.
--	Dữ liệu:
-o	Một dự án có nhiều thành viên.
-o	Mỗi thành viên trong dự án là một người dùng trong hệ thống, bao gồm thông tin: họ và tên, email, vai trò, ngày vào dự án.
 
-2.5.4.	Quản lý stages của dự án
--	Mô tả:
-o	Các thành viên có thể xem danh sách/chi tiết stages của dự án.
-o	Chủ dự án hoặc quản lý dự án có thể tạo mới/cập nhật stages cho dự án đang thực hiện.
-o	Chủ dự án, quản lý dự án, người giám sát dự án có thể thực hiện đánh giá khi kết thúc stage.
--	Dữ liệu:
-o	Một dự án bao gồm nhiều stages.
-o	Mỗi stage bao gồm các thông tin: tên stage, ngày bắt đầu, ngày kết thúc dự kiến, ngày kết thúc thực tế.
-o	Mỗi stage có nhiều bản đánh giá. Mỗi bản đánh giá bao gồm: nội dung đánh giá, người đánh giá.
--	Yêu cầu bổ sung:
-o	Ngày bắt đầu của stage mới phải lớn hơn ngày kết thúc thực tế của stage gần nhất trước đó.
-2.5.5.	Quản lý công việc của dự án
--	Mô tả:
-o	Các thành viên có thể xem danh sách/chi tiết công việc của dự án ở tất cả các stages hoặc 1 stage được chọn.
-o	Các thành viên có thể tạo mới/cập nhật công việc cho stage hiện tại.
--	Dữ liệu:
-o	Một stages có nhiều công việc. Một công việc thuộc về 1 stage.
-o	Mỗi công việc bao gồm các thông tin: mã công việc, tiêu đề, loại công việc, độ ưu tiên, ngày tạo, ngày bắt đầu, hạn chót, ngày kết thúc thực tế, mô tả công việc, trạng thái, người tạo, người thực hiện.
-o	2 loại công việc: “Nhiệm vụ”, “Vấn đề”.
-o	5 độ ưu tiên: “Cao nhất”, “Cao”, “Trung bình”, “Thấp”, “Thấp nhất”. 
--	Yêu cầu bổ sung:
-o	Hiển thị danh sách công việc dưới dạng Agile Board bao gồm 6 cột trạng thái và các công việc tương ứng của 6 cột.
-o	Cột trạng thái “Cancel” có thể ẩn/hiện tùy ý.
-o	Khi 1 stage được tạo mới, toàn bộ các công việc với trạng thái khác Done, Cancel ở stage đã kết thúc trước đó tự động di chuyển sang stage mới.
--	Phân quyền:
-o	Chủ dự án, quản lý dự án, người tạo công việc có thể sửa tất cả thông tin của công việc đã tạo.
-o	Người thực hiện công việc chỉ được phép cập nhật trạng thái công việc.
-2.5.6.	Trao đổi công việc
--	Mô tả:
-o	Các thành viên có thể thực hiện trao đổi công việc bằng cách tạo các comment tại công việc muốn trao đổi.
--	Dữ liêu:
-o	Một công việc có nhiều comments. Một comment thuộc về 1 công việc.
-o	Mỗi comment bao gồm thông tin: nội dung, người tạo, ngày tạo.
--	Yêu cầu bổ sung
-o	Các thành viên có thể thực hiện tag 1 hoặc nhiều thành viên khác vào một comment.
-
-3. Công nghệ sử dụng
-
--	Công nghệ
-
-o	FE:  
-	ReactJS
-o	BE: 
-	NodeJS + ExpressJS + MongoDB
-
--	Công cụ:
-o	Text editor, IDE: VS Code, …
-o	UI/UX Design: Figma, …
-o	Source Control: GIT + (Github)
-o	Mail: mailtrap.io
+3. Các chức năng chính
+3.1. Quản lý dự án
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/aafb9e1c-3988-41db-90c7-257eb86d1344)
+3.2. Quản lý giai đoạn trong dự án
+[image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7092cde2-498a-4246-bd3c-2632ee22beb0)
+3.3. Quản lý công việc trong dự án
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/d913bd25-11d2-4f1b-80fe-d03d428c7903)
+3.4. Quản lý trao đổi trong công việc
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/40e4b20c-1a51-490f-a679-70f82ee119b5)
+3.5. Quản lý thành viên
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7c2b13cb-7ced-4d4d-b0d0-d9f9d5f6b34d)

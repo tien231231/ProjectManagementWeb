@@ -12,6 +12,8 @@ function LandingPage() {
   const token = useAppSelector(
     (state: RootState) => state.auth?.userInfo?.token
   );
+  
+  
   useEffect(() => {
     if (!token) {
       navigate("/");

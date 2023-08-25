@@ -285,7 +285,7 @@ const addNewTask = async (req, res) => {
       <li><strong>Task:</strong> ${task.title}</li> 
       </ul> 
       <p>You can access the task details and collaborate on it by clicking on the following link: <a href="${process.env.CLIENT_URL}/project/${project._id}/${stage._id}/${task._id}">${process.env.CLIENT_URL}/project/${project._id}/${stage._id}/${task._id}</a></p> 
-      <p>Thank you,<br>pln.x10</p>`,
+      <p>Thank you,<br>ProjectManagementWeb</p>`,
     };
     transport.sendMail(mailOptions);
 
@@ -564,7 +564,7 @@ const updateTask = async (req, res) => {
             <li><strong>Task:</strong> ${task.title}</li>
           </ul>
           <p>Updated Task Details: <a href="${process.env.CLIENT_URL}/project/${project._id}/${stage._id}/${task._id}">${process.env.CLIENT_URL}/project/${project._id}/${stage._id}/${task._id}</a></p>
-          <p>Thank you,<br>pnl.x10</p>`
+          <p>Thank you,<br>ProjectManagementWeb</p>`
     };
     
     transport.sendMail(mailOptions);
@@ -778,7 +778,8 @@ const deleteTask = async (req, res) => {
       from: 'pnl.x10.2@gmail.com',
       to: newTask.assignee.email,
       subject: 'Task Deleted',
-      html: `<p>Dear ${task.assignee.fullName},</p> <p>This is to inform you that the task has been deleted.</p> <p>Thank you.</p>`
+      html: `<p>Dear ${task.assignee.fullName},</p> <p>This is to inform you that the task has been deleted.</p> 
+      <p>Thank you,<br>ProjectManagementWeb</p>`
       };
 
     await Tasks.findByIdAndDelete(id);

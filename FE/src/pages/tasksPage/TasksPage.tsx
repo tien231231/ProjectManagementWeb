@@ -120,11 +120,11 @@ const TaskItem: React.FC<TaskItemProp> = ({ task, handleOpenInfoTask }) => {
     const hourBetweenDates =
       (deadline.getTime() - now.getTime()) / (60 * 60 * 1000);
     if (task.status !== "done") {
-      if (hourBetweenDates < 24) {
-        setBgColor("#E6883f");
+      if (hourBetweenDates < 24) {//khoảng thời gian đến hạn <24h
+        setBgColor("#E6883f");//màu cam nâu
       }
-      if (hourBetweenDates < 0) {
-        setBgColor("#EC2B2B");
+      if (hourBetweenDates < 0) {//quá hạn
+        setBgColor("#EC2B2B");//chuyển đỏ
       }
     }
   }, [task]);

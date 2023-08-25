@@ -282,8 +282,7 @@ html {
   cursor: pointer;
 }
 .header_auth-user .ant-typography {
-  font-size: 16px;
-  color: red;
+  color: black;
 }
 .header_auth-user .header__img {
   flex-shrink: 0;

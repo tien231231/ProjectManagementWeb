@@ -51,7 +51,7 @@ const Header = () => {
             style={{ width: '50px', height: '25px' }}
           />
         </Link>
-        <span>Project Management</span>
+        <span></span>
       </div>
       <div className="header_auth">
         <div className="language_action">

@@ -66,6 +66,7 @@
   display: flex;
   align-items: center;
   gap: 15px;
+  
   .dropdown__user {
     text-overflow: ellipsis;
     overflow: hidden;
@@ -73,12 +74,12 @@
     flex: 1;
     text-decoration: none;
     font-weight: 600;
-
+    
     cursor: pointer;
   }
   .ant-typography {
-    font-size: 16px;
-    color: red;
+    
+    color: black;
   }
   .header__img {
     flex-shrink: 0;
