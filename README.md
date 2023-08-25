@@ -3,7 +3,7 @@
    ========================PROJECT MANAGEMENT==========================
 
 
-    ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/3ba3ecdd-bd90-4499-b56a-337922a50b99)
+![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/3ba3ecdd-bd90-4499-b56a-337922a50b99)
 
 1. Describe
 
