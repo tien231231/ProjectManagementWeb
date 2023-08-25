@@ -43,20 +43,19 @@ There are 4 roles in 1 project:
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/e5daefea-38ee-423b-9b3e-d939c6ac6922)
 
 
-3. Các chức năng chính
-
-    3.1. Quản lý dự án
+3. Main fuction
     
+
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/aafb9e1c-3988-41db-90c7-257eb86d1344)
 
-    3.2. Quản lý giai đoạn trong dự án
+    
 [image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7092cde2-498a-4246-bd3c-2632ee22beb0)
 
-    3.3. Quản lý công việc trong dự án
+    
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/d913bd25-11d2-4f1b-80fe-d03d428c7903)
 
-    3.4. Quản lý trao đổi trong công việc
+    
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/40e4b20c-1a51-490f-a679-70f82ee119b5)
 
-    3.5. Quản lý thành viên
+   
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7c2b13cb-7ced-4d4d-b0d0-d9f9d5f6b34d)
