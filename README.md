@@ -23,10 +23,10 @@ A project management website is an online system developed to support the effici
 
 2. Require function
 
-    2.1.	Workflow Diagram
+2.1.Workflow Diagram
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/4ab365ae-f70d-4f71-80d4-101ecdfa673a)
 
-    2.2.	User's role in the project
+2.2.	User's role in the project
 In each project, the user has a unique role.
 There are 4 roles in 1 project:
     - Project owner (Project creator), maximum 1 person/project
@@ -34,12 +34,11 @@ There are 4 roles in 1 project:
     - Member
     - Supervisor
 
-    2.3.	Work status transition diagram
+2.3.	Work status transition diagram
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/7236caa4-8477-4b78-8571-9819853eb7b5)
   
 
-    2.4.	Use cases
-
+2.4.	Use cases
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/e5daefea-38ee-423b-9b3e-d939c6ac6922)
 
 
