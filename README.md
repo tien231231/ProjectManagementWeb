@@ -46,6 +46,7 @@ There are 4 roles in 1 project:
 3. Các chức năng chính
 
     3.1. Quản lý dự án
+    
 ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/aafb9e1c-3988-41db-90c7-257eb86d1344)
 
     3.2. Quản lý giai đoạn trong dự án
