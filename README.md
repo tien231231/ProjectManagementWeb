@@ -23,7 +23,7 @@ A project management website is an online system developed to support the effici
 
 2. Require function
 
-2.1.Workflow Diagram
+    2.1.Workflow Diagram                                 
     ![image](https://github.com/tien231231/ProjectManagementWeb/assets/37107401/4ab365ae-f70d-4f71-80d4-101ecdfa673a)
 
 2.2.	User's role in the project
